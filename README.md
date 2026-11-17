@@ -2,6 +2,8 @@
 
 **Your phone camera. On your wrist.**
 
+> Distribution status: source and documentation are public. The signed Android APK release is awaiting attachment upload; the Zepp Store package has not yet been submitted. Download links below become available after release publication.
+
 WristSnap is a local camera remote for Amazfit Active 2 Square and Android. Capture a photo, start a video, switch lenses, adjust zoom and review recent captures without reaching for your phone. A minimal AMOLED interface keeps the important controls within a tap or swipe.
 
 [Download Android APK](https://github.com/vinothkumar-vm1993/wristsnap/releases/download/v0.9.4/WristSnap-0.9.4.apk) · [Release notes](https://github.com/vinothkumar-vm1993/wristsnap/releases/tag/v0.9.4) · [Setup guide](docs/SETUP.md) · [Privacy](docs/PRIVACY.md) · [Report an issue](https://github.com/vinothkumar-vm1993/wristsnap/issues)
