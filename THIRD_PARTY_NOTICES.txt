@@ -1,0 +1,9 @@
+Third-party notices
+
+WristSnap source is MIT licensed (see LICENSE).
+
+The watch package includes Zepp ZML (@zeppos/zml 0.0.43), distributed under Apache License 2.0 by its upstream authors. Source: https://github.com/zepp-health/zml . Used for watch/Side Service messaging and image/file-transfer integration.
+
+The Android companion uses AndroidX CameraX, AndroidX/Jetpack libraries, Material Components, Media3/ExoPlayer and Kotlin. Their upstream license and copyright notices remain applicable. These are camera, UI, media and language/runtime libraries, not advertising or analytics SDKs.
+
+Apache License 2.0 text: docs/APACHE-2.0.txt . Upstream dependency license files are retained in source packages where supplied. Test-only dependencies are not distributed as application features.

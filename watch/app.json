@@ -1,0 +1,63 @@
+{
+  "configVersion": "v3",
+  "app": {
+    "appId": 1136713,
+    "appName": "WristSnap",
+    "appType": "app",
+    "version": {
+      "code": 33,
+      "name": "0.6.17"
+    },
+    "icon": "icon.png",
+    "vender": "WristSnap",
+    "description": "Camera control through the existing Zepp connection"
+  },
+  "permissions": [
+    "device:os.ble",
+    "data:os.device.info",
+    "device:os.local_storage"
+  ],
+  "runtime": {
+    "apiVersion": {
+      "minVersion": "3.6",
+      "target": "4.0",
+      "compatible": "4.0"
+    }
+  },
+  "targets": {
+    "square390": {
+      "module": {
+        "page": {
+          "pages": [
+            "page/index"
+          ]
+        },
+        "app-side": {
+          "path": "app-side/index"
+        }
+      },
+      "platforms": [
+        {
+          "name": "active2square",
+          "deviceSource": 10223872
+        },
+        {
+          "name": "active2square",
+          "deviceSource": 10223873
+        },
+        {
+          "name": "active2square",
+          "deviceSource": 10223875
+        }
+      ],
+      "designWidth": 390
+    }
+  },
+  "i18n": {
+    "en-US": {
+      "appName": "WristSnap"
+    }
+  },
+  "defaultLanguage": "en-US",
+  "debug": false
+}
