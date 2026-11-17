@@ -4,9 +4,9 @@ The published source matches the tested application line: Android 0.9.4 / watch 
 
 | Check | Result / scope |
 | --- | --- |
-| Watch/Side Service automated suite | 79 passing tests in the development baseline; rerun for publication |
-| Android JVM tests | 25 passing tests; release variant rerun for publication |
-| Release APK assembly and lint | Run on the clean publication tree; see release notes |
+| Watch/Side Service automated suite | 79 checks passing across Watch and Side Service; publication tree rerun passed |
+| Android JVM tests | 25 release-variant tests passing, zero failures |
+| Release APK assembly and lint | Clean publication build successful; release lint has no errors |
 | Pixel camera, media, lock/exit, UI regression | 32 native checks on 0.9.3, seven targeted checks on 0.9.4; 33 unique checks across those runs, not a full latest-version 33-test run |
 | Watch 0.6.17 large aspect-fit review without zoom/pan | User physically confirmed working |
 | Photo/video, front/rear, single haptic, countdown, history/delete | Physical confirmations on the supported development device pair |
