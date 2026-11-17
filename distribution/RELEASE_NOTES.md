@@ -8,4 +8,4 @@ Requires Android 12+ and Amazfit Active 2 Square (390×450). Pixel 6a and the In
 
 Install the signed APK, connect the watch normally through Zepp, open WristSnap on both devices, and approve the local connection on the phone. See the repository README and setup guide before installing. Earlier debug APKs have a different signing certificate and cannot be updated in place by this release.
 
-Assets: signed Android APK, Zepp developer/store package, curated source archive and SHA256 checksums. No signing secrets or personal captures are included.
+Release asset: signed Android APK. GitHub also provides source archives for the tag; developers can build the watch package from source. The APK SHA-256 digest is included in the GitHub release notes. The watch app is under Zepp Store review. No signing secrets or personal captures are included.

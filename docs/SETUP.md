@@ -2,13 +2,13 @@
 
 ## Android installation
 
-Download `WristSnap-0.9.4.apk` from [the official repository release](https://github.com/vinothkumar-vm1993/wristsnap/releases/tag/v0.9.4). Verify SHA256SUMS.txt when possible. Android may ask you to allow installation from the browser or file manager used for this download; grant that only for the source you chose. Launch WristSnap and grant Camera permission. Microphone is optional, required only for normal-video sound. Allow notifications for the ongoing session control.
+Download `WristSnap-0.9.4.apk` from [the official repository release](https://github.com/vinothkumar-vm1993/wristsnap/releases/tag/v0.9.4). Verify the SHA-256 digest in the release notes when possible. Android may ask you to allow installation from the browser or file manager used for this download; grant that only for the source you chose. Launch WristSnap and grant Camera permission. Microphone is optional, required only for normal-video sound. Allow notifications for the ongoing session control.
 
 The public APK is release-signed. Earlier developer/debug installations use a different signing certificate, so Android may reject an in-place update. Export anything needed and remove the old developer app before installing the public release; app-local settings/access approval reset. Shared Pictures/Movies media are separate from app settings. Do not remove an existing installation without understanding this migration.
 
 ## Watch installation
 
-The Zepp Store package targets Amazfit Active 2 Square only. After approval, find WristSnap in the watch's app store in Zepp and install it. Availability is pending store review. GitHub's `.zab` asset is a developer package, not an APK and not a file to install directly on Android. For development, build the watch source and use the official Zepp developer preview/QR workflow with your own device and developer account. A preview QR is temporary and is not a permanent public store link.
+The Zepp Store package targets Amazfit Active 2 Square only. After approval, find WristSnap in the watch's app store in Zepp and install it. Availability is pending store review. The watch source is included in this repository. A built `.zab` is a developer/store package, not an APK and not a file to install directly on Android. For development, build the watch source and use the official Zepp developer preview/QR workflow with your own device and developer account. A preview QR is temporary and is not a permanent public store link.
 
 ## First connection
 
