@@ -47,8 +47,12 @@ WristSnap uses the watch's existing Zepp connection and an authenticated loopbac
 
 Start the phone session with WristSnap visible. An active session can continue with the phone locked or after pressing Home, subject to Android and device restrictions. With Android **0.9.5** and watch **0.6.19**, closing the watch controls updates the phone connection status while keeping the phone session and any recording active. If the close signal cannot reach the phone, the connection indicator clears after its timeout. Use **Disconnect** on the phone, root Back or remove the app from Recents to stop the Android camera session.
 
+## Support and contact
+
+For help with WristSnap, email [vinothkumar.vm1993@gmail.com](mailto:vinothkumar.vm1993@gmail.com). For bugs or feature requests, [open a GitHub issue](https://github.com/vinothkumar-vm1993/wristsnap/issues). Include your phone model, Android version, watch firmware and both WristSnap versions so the issue can be reproduced.
+
 ## Development
 
-This repository includes the Android Kotlin companion, Zepp Device App, Side Service and automated tests. See [build instructions](docs/DEVELOPMENT.md) and the [validation matrix](docs/VALIDATION.md). Report issues with your phone model, Android version, watch firmware and both WristSnap versions.
+This repository includes the Android Kotlin companion, Zepp Device App, Side Service and automated tests. See [build instructions](docs/DEVELOPMENT.md) and the [validation matrix](docs/VALIDATION.md).
 
 [MIT License](LICENSE) · [Third-party notices](THIRD_PARTY_NOTICES.txt) · [Report an issue](https://github.com/vinothkumar-vm1993/wristsnap/issues)
