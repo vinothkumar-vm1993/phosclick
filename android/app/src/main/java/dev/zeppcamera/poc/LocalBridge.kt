@@ -20,7 +20,7 @@ class LocalBridge(private val context:Context,
  @Volatile private var server:ServerSocket?=null
  private var pool:ThreadPoolExecutor?=null
  @Volatile private var seenAt=0L
- private var notified=false
+ @Volatile private var notified=false
  private val sockets=java.util.Collections.synchronizedSet(mutableSetOf<Socket>())
  private data class Job(val hash:String,val created:Long,val latch:CountDownLatch=CountDownLatch(1),@Volatile var result:ByteArray?=null)
  private val jobs=linkedMapOf<String,Job>()
@@ -40,7 +40,20 @@ class LocalBridge(private val context:Context,
   main.post{status("Ready • open Camera on watch")}
   main.post(lease)
  }
- private val lease=object:Runnable{override fun run(){if(server==null)return;if(notified&&System.currentTimeMillis()-seenAt>45000){notified=false;connected(false);status("Watch disconnected")};main.postDelayed(this,5000)}}
+ private val lease=object:Runnable{
+  override fun run(){
+   if(server==null)return
+   val idleMs=android.os.SystemClock.elapsedRealtime()-seenAt
+   if(notified&&idleMs>=20000){
+    val commandRunning=synchronized(jobs){jobs.values.any{it.result==null}}
+    if(!commandRunning||idleMs>=45000){
+     notified=false
+     connected(false)
+    }
+   }
+   main.postDelayed(this,2000)
+  }
+ }
  fun openWindow(){gate.openWindow();status("Open Camera on watch, then allow access here")}
  fun forget(){gate.forget();preferences.edit().clear().apply();notified=false;connected(false);media=null;status("Watch access removed")}
  fun storeImage(png:ByteArray):String{require(png.size<=262144);val m=Media(secret(),png,System.currentTimeMillis()+60000);media=m;return "/media/"+m.id}
@@ -65,7 +78,7 @@ class LocalBridge(private val context:Context,
   val token=headers["authorization"]?.removePrefix("Bearer ")?:""
   if(!gate.authorized(token)){reply(socket,401,JSONObject().put("error","AUTH_REQUIRED"));return}
   if(path=="/session"||path=="/command"||path=="/status"){
-  seenAt=System.currentTimeMillis()
+  seenAt=android.os.SystemClock.elapsedRealtime()
   if(!notified){main.post{if(server!=null&&!notified){notified=true;connected(true);status("Watch connected through Zepp")}}}
   }
   if(path=="/diagnostics"){
@@ -89,6 +102,19 @@ class LocalBridge(private val context:Context,
   }
   if(method=="GET"&&path.startsWith("/result/")){val job=synchronized(jobs){jobs[path.removePrefix("/result/").substringBefore('?')]};if(job==null)reply(socket,404,JSONObject().put("error","Unknown command"))else{if(path.endsWith("?wait=1")&&job.result==null)job.latch.await(1500,TimeUnit.MILLISECONDS);if(job.result==null)reply(socket,202,JSONObject().put("pending",true))else raw(socket,200,"application/json",job.result!!)};return}
   if(method=="GET"&&path=="/session"){reply(socket,200,JSONObject().put("ok",true).put("version",BuildConfig.VERSION_NAME).put("sessionId",sessionId()));return}
+  if(method=="POST"&&path=="/detach"){
+   val detached=CountDownLatch(1)
+   main.post{
+    try{
+     notified=false
+     seenAt=0L
+     connected(false)
+    }finally{detached.countDown()}
+   }
+   if(detached.await(1,TimeUnit.SECONDS))reply(socket,200,JSONObject().put("ok",true))
+   else reply(socket,503,JSONObject().put("error","Watch status busy"))
+   return
+  }
   if(method=="POST"&&path=="/close"){main.post{notified=false;connected(false);status("Disconnected");manualDisconnect()};reply(socket,200,JSONObject().put("ok",true));return}
   if(method=="GET"&&path.startsWith("/media/")){
    val m=media;if(m==null||m.expires<System.currentTimeMillis()||path!="/media/"+m.id){reply(socket,404,JSONObject().put("error","Image expired"));return};raw(socket,200,"image/png",m.bytes);return

@@ -2,7 +2,7 @@ import * as ui from '@zos/ui'
 import { Vibrator } from '@zos/sensor'
 import { LocalStorage } from '@zos/storage'
 import { home } from '@zos/router'
-import { setWakeUpRelaunch } from '@zos/display'
+import { setWakeUpRelaunch,setPageBrightTime,resetPageBrightTime } from '@zos/display'
 import { onGesture,offGesture,GESTURE_UP,GESTURE_DOWN,GESTURE_LEFT,GESTURE_RIGHT } from '@zos/interaction'
 import { BasePage } from '@zeppos/zml/base-page'
 import { MODES,modeAfter,elapsed,nextValue,cameraState,noticeText } from '../shared/model'
@@ -21,7 +21,7 @@ Page(BasePage({
  },
  text(x,y,w,h,size,text,color=0xffffff){const a=ui.createWidget(ui.widget.TEXT,{x,y,w,h,text:String(text??'—'),text_size:size,color,text_style:ui.text_style.WRAP,align_h:ui.align.CENTER_H});this.widgets.push(a);return a},
  button(x,y,w,h,label,action,color=0x22272e){const a=ui.createWidget(ui.widget.BUTTON,{x,y,w,h,text:String(label??'—'),text_size:24,color:0xffffff,normal_color:color,press_color:0x505760,radius:Math.min(20,h/2),click_func:action});this.widgets.push(a);return a},
- icon(x,y,name,action,size=72){const file=name+(size===96?'96':'');const a=ui.createWidget(ui.widget.BUTTON,{x,y,w:size,h:size,text:'',normal_src:file+'.png',press_src:file+'-pressed.png',click_func:action,longpress_func:()=>{this.hintReturn=this.panel;this.hintText={'flash-off':'Photo flash Off / Auto / On, or video torch', 'flash-auto':'Photo flash is automatic', 'flash-on':'Photo flash is on', 'torch-on':'Video torch is on; tap to turn off',gallery:'Left: older capture\nRight: newer capture',snapshot:'Request a still camera frame',switch:'Switch front or rear camera',connect:'Watch 0.6.17 · Zepp '+(this.bridgeVersion||'?')+' · phone '+(this.phoneVersion||'?'),settings:'Capture settings',shutter:'Take a photo',record:'Start recording',stop:'Stop and save recording',back:'Back',next:'Next page'}[name]||'Tap to select';this.navigate('hint')}});this.widgets.push(a);return a},
+ icon(x,y,name,action,size=72){const file=name+(size===96?'96':'');const a=ui.createWidget(ui.widget.BUTTON,{x,y,w:size,h:size,text:'',normal_src:file+'.png',press_src:file+'-pressed.png',click_func:action,longpress_func:()=>{this.hintReturn=this.panel;this.hintText={'flash-off':'Photo flash Off / Auto / On, or video torch', 'flash-auto':'Photo flash is automatic', 'flash-on':'Photo flash is on', 'torch-on':'Video torch is on; tap to turn off',gallery:'Left: older capture\nRight: newer capture',snapshot:'Request a still camera frame',switch:'Switch front or rear camera',connect:'Watch 0.6.19 · Zepp '+(this.bridgeVersion||'?')+' · phone '+(this.phoneVersion||'?'),settings:'Capture settings',shutter:'Take a photo',record:'Start recording',stop:'Stop and save recording',back:'Back',next:'Next page'}[name]||'Tap to select';this.navigate('hint')}});this.widgets.push(a);return a},
  connectionHaptic(){
   if(this.connectionHapticPlayed)return
   this.connectionHapticPlayed=true
@@ -54,12 +54,22 @@ Page(BasePage({
  },
  diagnose(event){
   if(!this.alive||!this.paired)return
-  const info={event,watchVersion:'0.6.17',captureWidget:'IMG',hapticStarts:this.hapticStarts,touchUps:this.touchUps,vibrationScene:this.lastHapticType}
+  const info={event,watchVersion:'0.6.19',captureWidget:'IMG',hapticStarts:this.hapticStarts,touchUps:this.touchUps,vibrationScene:this.lastHapticType}
   try{info.vibrationTypes=JSON.stringify({gentle:this.vibrator?.getType?.().GENTLE_SHORT,durationMs:12,stopMs:18,issue:this.hapticIssue||''})}catch(e){}
   try{this.call({diagnostics:info}).catch(()=>{})}catch(e){}
  },
  finishIntro(){this.introVisible=false;this.introStep=0;try{this.guideStore?.setItem("guide_v1",true)}catch(e){}this.layoutSignature=null;this.draw();if(!this.paired)this.connectLocal()},
- exitControls(){try{setWakeUpRelaunch({relaunch:false})}catch(e){}home()},
+ async exitControls(){
+  if(this.closing)return
+  this.closing=true
+  this.revision++
+  this.syncTimers()
+  try{setWakeUpRelaunch({relaunch:false})}catch(e){}
+  try{
+   if(this.paired||this.connecting)await this.request({method:'DETACH'},{timeout:1500})
+  }catch(e){/* The phone expires the connection if the watch is out of reach. */}
+  finally{if(this.alive){try{resetPageBrightTime()}catch(e){}home()}}
+ },
  goBack(){
   if(this.panel==='exit'){this.panel=this.exitReturn?.panel||'main';this.introVisible=this.exitReturn?.intro||false;this.draw();return}
   if(this.introVisible){if(this.introStep>0){this.introStep=0;this.draw()}else this.offerExit();return}
@@ -88,11 +98,22 @@ Page(BasePage({
  },
  syncTimers(){
   if(!this.alive)return
-  const reconnect=!this.paired&&!this.manualDisconnect&&!this.introVisible
+  const reconnect=!this.closing&&!this.paired&&!this.manualDisconnect&&!this.introVisible
   if(reconnect&&!this.connectTimer)this.connectTimer=setInterval(()=>{if(!this.connecting)this.connectLocal()},5000)
   else if(!reconnect&&this.connectTimer){clearInterval(this.connectTimer);this.connectTimer=null}
-  if(this.paired&&!this.sync)this.sync=setInterval(()=>{if(this.alive&&!this.busy&&!this.statusBusy&&!this.connecting&&!this.initializing)this.send('STATUS',{},true)},10000)
-  else if(!this.paired&&this.sync){clearInterval(this.sync);this.sync=null}
+  // Follow phone mode changes while the camera controls are visible.
+  const statusInterval=this.paired&&!this.closing
+   ? (this.panel==='main'&&!this.introVisible ? 2000 : 10000)
+   : 0
+  if(statusInterval!==(this.statusInterval||0)){
+   clearInterval(this.sync)
+   this.statusInterval=statusInterval
+   this.sync=statusInterval ? setInterval(()=>{
+    if(this.alive&&!this.closing&&!this.busy&&!this.statusBusy&&!this.connecting&&!this.initializing){
+     return this.send('STATUS',{},true)
+    }
+   },statusInterval) : null
+  }
   const clock=this.paired&&(this.camera.recording||(this.captureCountdownDeadline||0)>Date.now())&&this.panel==='main'&&!this.introVisible
   if(clock&&!this.tick)this.tick=setInterval(()=>this.updateLabels(),1000)
   else if(!clock&&this.tick){clearInterval(this.tick);this.tick=null}
@@ -273,9 +294,9 @@ Page(BasePage({
   }).catch(fail)
  },
  async connectLocal(manual=false){
-  if(this.connecting||this.busy||this.statusBusy||!this.alive)return
+  if(this.closing||this.connecting||this.busy||this.statusBusy||!this.alive)return
   this.connecting=true;if(manual){this.manualDisconnect=false}
-  try{const r=await this.request({method:'CONNECT'},{timeout:12000});if(!this.alive)return
+  try{const r=await this.request({method:'CONNECT'},{timeout:12000});if(!this.alive||this.closing)return
    if(r.ok){
     this.bridgeVersion=r.bridgeVersion;this.phoneVersion=r.phoneVersion;this.phoneSessionId=r.sessionId
     this.paired=true;this.connected=true;this.diagnose('connected');this.initializing=this.photoFirst;this.draw()
@@ -313,7 +334,7 @@ Page(BasePage({
  },
  configure(p){if(Object.keys(p).every(k=>this.camera[k]===p[k]))return;return this.send('CONFIG',p)},
  async send(op,args={},silent=false){
-  if(!this.alive||!this.paired)return
+  if(!this.alive||this.closing||!this.paired)return
   const status=op==='STATUS'
   if(status?(this.statusBusy||this.busy):this.busy){if(!status){this.notice='Wait for the current action';this.updateLabels()}return}
   if(['SNAPSHOT','REVIEW'].includes(op)&&this.imageBusy){if(this.expectedImageKind==='thumbnail')this.queuedImageOp={op,args};return}
@@ -334,7 +355,14 @@ Page(BasePage({
    if(r.error&&!r.id)throw Error(String(r.error))
    if(r.id!==id)throw Error('Response ID mismatch; reconnect')
    let state=r.state;if(typeof state==='string')state=JSON.parse(state)
-   if(state&&typeof state==='object')this.camera=cameraState(this.camera,state)
+   if(state&&typeof state==='object'){
+    const previousMode=this.camera.mode
+    this.camera=cameraState(this.camera,state)
+    if(status&&r.ok===true&&this.panel==='main'&&!this.initializing&&previousMode!==this.camera.mode){
+     this.transitionAxis=ui.prop.X
+     this.transition=Math.sign(MODES.indexOf(this.camera.mode)-MODES.indexOf(previousMode))
+    }
+   }
    if(r.ok!==true)throw Error(String(r.error||'Camera rejected command'))
    succeeded=true;this.statusFailures=0;this.connected=true;this.notice=r.message||'Camera ready'
    if(op==='REVIEW'){this.pendingReviewToken=r.reviewToken||null;this.pendingMediaContentKind=r.previewKind||'Photo'}
@@ -366,8 +394,8 @@ Page(BasePage({
   file.on('change',e=>{if(!this.alive||!this.imageBusy||file.params.requestId!==this.expectedImageId)return;if(e.data.readyState==='transferred')render();else if(e.data.readyState==='error'){this.imageBusy=false;this.historyLoading=false;clearTimeout(this.imageTimer);if(this.historyImageGeneration!=null&&this.historyImageGeneration!==this.historyGeneration){this.draw();return}this.notice='Image failed. Retry Frame.';this.panel='error';this.draw()}})
   if(file.readyState==='transferred')render()
  },
- build(){ui.setStatusBarVisible(false);this.draw();if(!this.paired&&!this.introVisible)this.connectLocal();onGesture({callback:g=>{this.capturePress?.cancel();
-  if(!this.alive)return false
+ build(){try{setPageBrightTime({brightTime:60000})}catch(e){}ui.setStatusBarVisible(false);this.draw();if(!this.paired&&!this.introVisible)this.connectLocal();onGesture({callback:g=>{this.capturePress?.cancel();
+  if(!this.alive||this.closing)return false
   if(this.panel==='review'&&this.historyActive&&(g===GESTURE_LEFT||g===GESTURE_RIGHT)){
    if(!this.historyLoading&&!this.imageBusy){const index=Math.max(0,Math.min(this.history.length-1,this.historyIndex+(g===GESTURE_LEFT?1:-1)));if(index!==this.historyIndex)this.loadHistory(index)}return true
   }
@@ -382,6 +410,10 @@ Page(BasePage({
  }});this.syncTimers()},
  onDestroy(){
   // Never enable an app title bar while the OS is restoring the watch face.
+  if(!this.closing&&(this.paired||this.connecting)){
+   try{this.call({detach:true}).catch(()=>{})}catch(e){}
+  }
+  try{resetPageBrightTime()}catch(e){}
   this.alive=false;offGesture();clearInterval(this.tick);clearInterval(this.sync);clearTimeout(this.pollTimer);clearTimeout(this.imageTimer);clearInterval(this.connectTimer);clearTimeout(this.startupTimer);this.startupResolve?.()
   clearTimeout(this.hapticStopTimer);try{this.vibrator?.stop()}catch(e){}this.capturePress=null
   this.widgets.forEach(w=>{try{ui.deleteWidget(w)}catch(e){}});this.widgets=[];this.lastClockText=null;this.lastZoomText=null;this.lastStatusText=null;this.clock=null;this.statusWidget=null;this.zoomChip=null;this.zoomValueWidget=null

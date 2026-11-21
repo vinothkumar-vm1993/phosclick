@@ -1,11 +1,12 @@
-# WristSnap — first public release
+## WristSnap 0.9.5
 
-Android 0.9.4 (39) + Zepp watch 0.6.17 (33).
+Install the signed **WristSnap-0.9.5.apk** under Assets. The Android update pairs with watch **0.6.19** for the full watch-close and display fixes. Zepp Store availability is subject to review.
 
-Local camera control through the existing Zepp connection, four capture modes, front/rear switching, zoom, synchronized countdown, multi-shot, photo/video gallery and deletion, recent watch capture history, and a minimal AMOLED interface. Watch review shows aspect-fit photos and still thumbnails for video. No continuous watch stream or watch video playback.
+- **Two-way mode sync.** The open watch camera screen checks for phone mode changes every two seconds, while watch swipes update the phone.
+- **Longer watch display timeout.** WristSnap requests a 60-second page timeout and restores the normal display behavior on exit.
+- **Accurate watch connection status.** Closing watch controls clears the phone's connected indicator while an active Android camera session or recording continues. If the watch disappears, the status expires after the connection timeout.
+- **Compatibility.** Android 12+ and Amazfit Active 2 Square or Active 2 NFC Square (390 × 450). The physically tested setup uses Pixel 6a and the Indian Active 2 Square. Camera options depend on the phone and lens.
 
-Requires Android 12+ and Amazfit Active 2 Square (390×450). Pixel 6a and the Indian Active 2 Square variant are the physically tested pair; other Android models and regional targets remain unverified. Zepp Store availability is subject to review.
+The APK uses the same public signing certificate as 0.9.4. People with the earlier developer/debug build may need to migrate first.
 
-Install the signed APK, connect the watch normally through Zepp, open WristSnap on both devices, and approve the local connection on the phone. See the repository README and setup guide before installing. Earlier debug APKs have a different signing certificate and cannot be updated in place by this release.
-
-Release asset: signed Android APK. GitHub also provides source archives for the tag; developers can build the watch package from source. The APK SHA-256 digest is included in the GitHub release notes. The watch app is under Zepp Store review. No signing secrets or personal captures are included.
+[Setup and features](https://github.com/vinothkumar-vm1993/wristsnap#readme) · [Device support](https://github.com/vinothkumar-vm1993/wristsnap/blob/main/docs/COMPATIBILITY.md) · [Validation](https://github.com/vinothkumar-vm1993/wristsnap/blob/main/docs/VALIDATION.md)

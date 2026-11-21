@@ -146,7 +146,7 @@ class CameraSessionService:android.app.Service(),androidx.lifecycle.LifecycleOwn
         lapse=TimelapseCamera(this,renderer)
         bridge=LocalBridge(this,{c,done->command(c,done)},{message->show(message)},{live->
             connectionLive=live
-            if(live&&!paired){paired=true;startCamera()}else if(!live&&paired)show("Watch unavailable")
+            if(live&&!paired){paired=true;startCamera()}else if(!live&&paired)show("Watch disconnected")
         },{done->approval?.invoke(done)?:done(false)},{disconnect()},{sessionId})
     }
     override fun onStartCommand(intent:android.content.Intent?,flags:Int,startId:Int):Int{
@@ -164,14 +164,21 @@ class CameraSessionService:android.app.Service(),androidx.lifecycle.LifecycleOwn
     private fun startBridge(){try{bridge.start();retries=0}catch(e:Exception){if(retries++<4)handler.postDelayed({if(!stopping)startBridge()},250L*retries)else{show("Connection unavailable");disconnect()}}}
     private var notificationChannelReady=false;private var notificationKey=""
     private fun notification():android.app.Notification{
-        notificationKey="${isRecording()}:$connectionLive"
+        notificationKey="${isRecording()}:$connectionLive:$paired"
         val manager=getSystemService(android.app.NotificationManager::class.java)
         if(!notificationChannelReady){manager.createNotificationChannel(android.app.NotificationChannel("camera_session","Watch camera",android.app.NotificationManager.IMPORTANCE_LOW).apply{setSound(null,null);enableVibration(false)});notificationChannelReady=true}
         val open=android.app.PendingIntent.getActivity(this,1,android.content.Intent(this,MainActivity::class.java),android.app.PendingIntent.FLAG_IMMUTABLE or android.app.PendingIntent.FLAG_UPDATE_CURRENT)
         val stop=android.app.PendingIntent.getService(this,2,android.content.Intent(this,CameraSessionService::class.java).setAction("STOP"),android.app.PendingIntent.FLAG_IMMUTABLE or android.app.PendingIntent.FLAG_UPDATE_CURRENT)
-        return android.app.Notification.Builder(this,"camera_session").setSmallIcon(R.drawable.ic_action_shutter).setContentTitle("WristSnap").setContentText(if(isRecording())"Recording · Watch control active"else if(connectionLive)"Watch connected"else "Watch control active").setOngoing(true).setOnlyAlertOnce(true).setContentIntent(open).addAction(android.app.Notification.Action.Builder(null,"Disconnect",stop).build()).build()
+        val notificationText=when{
+            isRecording()&&connectionLive->"Recording · Watch connected"
+            isRecording()->"Recording"
+            connectionLive->"Watch connected"
+            paired->"Watch disconnected"
+            else->"Ready for watch"
+        }
+        return android.app.Notification.Builder(this,"camera_session").setSmallIcon(R.drawable.ic_action_shutter).setContentTitle("WristSnap").setContentText(notificationText).setOngoing(true).setOnlyAlertOnce(true).setContentIntent(open).addAction(android.app.Notification.Action.Builder(null,"Disconnect",stop).build()).build()
     }
-    private fun notifySession(){if(!stopping&&notificationKey!="${isRecording()}:$connectionLive")try{getSystemService(android.app.NotificationManager::class.java).notify(47835,notification())}catch(_:Exception){}}
+    private fun notifySession(){if(!stopping&&notificationKey!="${isRecording()}:$connectionLive:$paired")try{getSystemService(android.app.NotificationManager::class.java).notify(47835,notification())}catch(_:Exception){}}
     fun disconnect(){
         if(stopping)return;stopping=true;connectionLive=false;paired=false;if(zoomRunning)finishZoom("Disconnected");bridge.stop()
         countdown?.cancel();countdown=null;countdownSeconds=0;countdownEndElapsed=0;cancelPhotos("Capture stopped")

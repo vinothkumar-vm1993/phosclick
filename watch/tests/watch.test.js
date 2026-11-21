@@ -1,6 +1,6 @@
 import {test} from 'node:test';import assert from 'node:assert/strict';import vm from 'node:vm';import fs from 'node:fs';
 import {MODES,modeAfter,elapsed,nextValue,cameraState,noticeText} from '../shared/model.js';
-function host(locked=false,overrides={}){let page,gesture,backCalls=0;const widgets=[];const context={ui:{setStatusBarVisible(){},widget:{TEXT:'text',BUTTON:'button',IMG:'img',FILL_RECT:'rect'},event:{CLICK_DOWN:'down',CLICK_UP:'up',MOVE:'move',MOVE_OUT:'out'},prop:{SRC:'src',TEXT:'text',X:'x',Y:'y',ANIM:'anim'},align:{CENTER_H:0},text_style:{WRAP:1},createWidget(type,p){const w={type,...p,listeners:{},addEventListener(e,f){this.listeners[e]=f},getProperty(k){return this[k]},setProperty(k,v){this[k]=v}};widgets.push(w);return w},deleteWidget(w){widgets.splice(widgets.indexOf(w),1)}},home:()=>{backCalls++},setWakeUpRelaunch(){},connectStatus:()=>true,Vibrator:class{getType(){return{GENTLE_SHORT:3}}start(){}stop(){}},VIBRATOR_SCENE_SHORT_LIGHT:1,VIBRATOR_SCENE_SHORT_MIDDLE:2,VIBRATOR_SCENE_NOTIFICATION:3,LocalStorage:class{getItem(){return true}setItem(){}},BasePage:x=>x,Page:p=>page=p,onGesture:o=>gesture=o.callback,offGesture(){},GESTURE_UP:1,GESTURE_DOWN:2,GESTURE_LEFT:3,GESTURE_RIGHT:4,MODES,modeAfter,elapsed,nextValue,cameraState,noticeText,setTimeout,clearTimeout,setInterval:()=>1,clearInterval,Date,Promise,console};
+function host(locked=false,overrides={}){let page,gesture,backCalls=0;const widgets=[];const context={ui:{setStatusBarVisible(){},widget:{TEXT:'text',BUTTON:'button',IMG:'img',FILL_RECT:'rect'},event:{CLICK_DOWN:'down',CLICK_UP:'up',MOVE:'move',MOVE_OUT:'out'},prop:{SRC:'src',TEXT:'text',X:'x',Y:'y',ANIM:'anim'},align:{CENTER_H:0},text_style:{WRAP:1},createWidget(type,p){const w={type,...p,listeners:{},addEventListener(e,f){this.listeners[e]=f},getProperty(k){return this[k]},setProperty(k,v){this[k]=v}};widgets.push(w);return w},deleteWidget(w){widgets.splice(widgets.indexOf(w),1)}},home:()=>{backCalls++},setWakeUpRelaunch(){},setPageBrightTime(){},resetPageBrightTime(){},connectStatus:()=>true,Vibrator:class{getType(){return{GENTLE_SHORT:3}}start(){}stop(){}},VIBRATOR_SCENE_SHORT_LIGHT:1,VIBRATOR_SCENE_SHORT_MIDDLE:2,VIBRATOR_SCENE_NOTIFICATION:3,LocalStorage:class{getItem(){return true}setItem(){}},BasePage:x=>x,Page:p=>page=p,onGesture:o=>gesture=o.callback,offGesture(){},GESTURE_UP:1,GESTURE_DOWN:2,GESTURE_LEFT:3,GESTURE_RIGHT:4,MODES,modeAfter,elapsed,nextValue,cameraState,noticeText,setTimeout,clearTimeout,setInterval:()=>1,clearInterval,Date,Promise,console};
 const source=fs.readFileSync(new URL('../page/index.js',import.meta.url),'utf8').replace(/^import .*$/gm,'');Object.assign(context,overrides);vm.runInNewContext(source,context);page.onInit();if(!locked){page.paired=true;page.panel="main";page.camera.ready=true}page.build();return {page,widgets,gesture,backCount:()=>backCalls};}
 test('mandatory pairing blocks camera controls and captures',async()=>{const h=host(true);let requests=0;h.page.request=async()=>{requests++;return{error:'not connected'}};await h.page.send('SHUTTER');assert.equal(requests,0);assert.ok(h.widgets.some(w=>w.normal_src==='back.png'));assert.ok(h.widgets.some(w=>w.normal_src==='connect.png'));assert.equal(h.page.paired,false)});
 test('mode endpoints and record clock',()=>{assert.equal(modeAfter('Photo',-1),'Photo');assert.equal(modeAfter('Timelapse',1),'Timelapse');assert.equal(elapsed(1000,62000),'01:01');assert.equal(nextValue([0,3,10],10),0)});
@@ -79,8 +79,8 @@ test('record tap during pending heartbeat executes and stale status cannot undo 
 test('camera fields do not replace framework messaging state',()=>{
  const framework={messaging:{native:true}};const h=host(false,{BasePage:p=>({...p,state:framework})});assert.equal(h.page.state,framework);assert.equal(h.page.camera.mode,'Photo')
 });
-test('Photo edge swipe stays in camera; connection Back still offers touch exit',()=>{
- const h=host();assert.equal(h.gesture(4),true);assert.equal(h.page.panel,'main');assert.equal(h.backCount(),0);h.page.paired=false;h.page.panel='connection';assert.equal(h.gesture(4),true);assert.equal(h.page.panel,'exit');h.widgets.find(w=>w.normal_src==='close96.png').click_func();assert.equal(h.backCount(),1)
+test('Photo edge swipe stays in camera; connection Back still offers touch exit',async()=>{
+ const h=host();assert.equal(h.gesture(4),true);assert.equal(h.page.panel,'main');assert.equal(h.backCount(),0);h.page.paired=false;h.page.panel='connection';assert.equal(h.gesture(4),true);assert.equal(h.page.panel,'exit');await h.widgets.find(w=>w.normal_src==='close96.png').click_func();assert.equal(h.backCount(),1)
 });
 test('startup waits for the actual phone camera before leaving its loading page',async()=>{
  const h=host();h.page.paired=false;h.page.camera.ready=false;let statuses=0;h.page.request=async q=>q.method==='CONNECT'?{ok:true}:{id:q.params.id,ok:true,state:{mode:q.params.op==='CONFIG'?'Photo':'Video',recording:false,ready:q.params.op==='CONFIG'||++statuses>1}}
@@ -152,8 +152,8 @@ test('rapid zoom taps coalesce to the last requested ratio',async()=>{
  const pending=h.page.changeZoom(.1);await h.page.changeZoom(.1);await h.page.changeZoom(.1);release();await new Promise(r=>setTimeout(r,0));release();await pending;assert.deepEqual(sent,[1.1,1.3]);assert.equal(h.page.camera.zoomRatio,1.3)
 });
 
-test('nested Back returns to the opener and swipe-to-close never disconnects phone',()=>{
- const h=host();h.page.navigate('quick');h.page.navigate('connection');h.gesture(4);assert.equal(h.page.panel,'quick');h.gesture(4);assert.equal(h.page.panel,'main');const calls=[];h.page.call=d=>{calls.push(d);return Promise.resolve()};h.gesture(4);assert.equal(h.page.panel,'main');assert.equal(h.backCount(),0);h.widgets.find(w=>w.normal_src==='close.png'&&w.x===40).click_func();h.widgets.find(w=>w.normal_src==='close96.png').click_func();assert.equal(h.backCount(),1);assert.ok(!calls.some(d=>d.close))
+test('nested Back returns to the opener and swipe-to-close never disconnects phone',async()=>{
+ const h=host();h.page.navigate('quick');h.page.navigate('connection');h.gesture(4);assert.equal(h.page.panel,'quick');h.gesture(4);assert.equal(h.page.panel,'main');const calls=[];h.page.call=d=>{calls.push(d);return Promise.resolve()};h.gesture(4);assert.equal(h.page.panel,'main');assert.equal(h.backCount(),0);h.widgets.find(w=>w.normal_src==='close.png'&&w.x===40).click_func();await h.widgets.find(w=>w.normal_src==='close96.png').click_func();assert.equal(h.backCount(),1);assert.ok(!calls.some(d=>d.close))
 });
 test('first-use Continue teaches the distinct swipe directions before Start',()=>{
  const h=host(true,{LocalStorage:class{getItem(){return false}setItem(){}}});h.widgets.find(w=>w.text==='Continue').click_func();assert.ok(h.widgets.some(w=>w.text==='Swipe right\nPrevious mode'));assert.ok(h.widgets.some(w=>w.text==='Swipe left\nNext mode'));assert.ok(h.widgets.some(w=>w.text==='Start'))
@@ -169,8 +169,8 @@ test('reopening watch controls in the same persistent phone session does not rep
  await connect('phone-session-1');await connect('phone-session-1');assert.equal(pulses,1);await connect('phone-session-2');assert.equal(pulses,2)
 });
 
-test('sleep relaunch uses the official API, while deliberate touch exit returns to watch face',()=>{
- const flags=[];let exited=0;const h=host(false,{setWakeUpRelaunch:o=>flags.push(o.relaunch),home:()=>exited++});h.page.goBack();assert.deepEqual(flags,[true]);assert.equal(exited,0);h.widgets.find(w=>w.normal_src==='close96.png').click_func();assert.deepEqual(flags,[true,false]);assert.equal(exited,1)
+test('sleep relaunch uses the official API, while deliberate touch exit returns to watch face',async()=>{
+ const flags=[];let exited=0;const h=host(false,{setWakeUpRelaunch:o=>flags.push(o.relaunch),home:()=>exited++});h.page.goBack();assert.deepEqual(flags,[true]);assert.equal(exited,0);await h.widgets.find(w=>w.normal_src==='close96.png').click_func();assert.deepEqual(flags,[true,false]);assert.equal(exited,1)
 });
 
 test('photo settings use named resolutions and Auto flash has its own asset',()=>{
@@ -249,7 +249,7 @@ test('late history image never reopens review after touch Back',()=>{const h=hos
 
 test('guide labels and arrows match actual camera pager directions',()=>{const h=host();h.page.introVisible=true;h.page.introStep=1;h.page.draw();assert.ok(h.widgets.some(w=>w.text==='Camera modes'));assert.ok(h.widgets.some(w=>w.text==='Swipe left\nNext mode'));assert.ok(h.widgets.some(w=>w.src==='back96.png'&&w.y===108));assert.ok(h.widgets.some(w=>w.text==='Swipe right\nPrevious mode'));assert.ok(h.widgets.some(w=>w.src==='next96.png'&&w.y===222));h.page.introVisible=false;h.page.camera.mode='Photo';h.page.panel='main';h.page.request=async q=>({id:q.params.id,ok:true,state:{mode:q.params.args.mode}});h.gesture(3);assert.equal(h.page.pendingMode,'Video')});
 
-test('idle watch has no one-second clock or paired reconnect wakeups',()=>{const intervals=new Map();let next=0;const h=host(false,{setInterval:(fn,ms)=>{intervals.set(++next,ms);return next},clearInterval:id=>intervals.delete(id)});assert.deepEqual([...intervals.values()],[10000]);h.page.camera.recording=true;h.page.draw();assert.deepEqual([...intervals.values()].sort((a,b)=>a-b),[1000,10000]);h.page.camera.recording=false;h.page.draw();assert.deepEqual([...intervals.values()],[10000]);h.page.paired=false;h.page.draw();assert.deepEqual([...intervals.values()],[5000]);h.page.manualDisconnect=true;h.page.draw();assert.equal(intervals.size,0)});
+test('idle watch has no one-second clock or paired reconnect wakeups',()=>{const intervals=new Map();let next=0;const h=host(false,{setInterval:(fn,ms)=>{intervals.set(++next,ms);return next},clearInterval:id=>intervals.delete(id)});assert.deepEqual([...intervals.values()],[2000]);h.page.camera.recording=true;h.page.draw();assert.deepEqual([...intervals.values()].sort((a,b)=>a-b),[1000,2000]);h.page.camera.recording=false;h.page.draw();assert.deepEqual([...intervals.values()],[2000]);h.page.paired=false;h.page.draw();assert.deepEqual([...intervals.values()],[5000]);h.page.manualDisconnect=true;h.page.draw();assert.equal(intervals.size,0)});
 test('unchanged watch status performs no repeated text writes',()=>{const h=host();let updates=0;h.widgets.forEach(w=>{const original=w.setProperty;w.setProperty=(k,v)=>{updates++;original.call(w,k,v)}});for(let i=0;i<20;i++)h.page.updateLabels();assert.equal(updates,0)});
 
 test('front rear switch sits right of shutter on every camera mode',()=>{const h=host();for(const mode of MODES){h.page.camera.mode=mode;h.page.draw();const flip=h.widgets.filter(w=>w.normal_src==='switch.png');assert.equal(flip.length,1);assert.equal(flip[0].x,278);assert.equal(flip[0].y,316);assert.ok(flip[0].w>=72);assert.ok(!h.widgets.some(w=>w.normal_src==='switch.png'&&w.y<120))}});
@@ -258,3 +258,61 @@ test('watch countdown uses matching phone progress and releases its clock when c
 
 
 test('gallery stays within screen with fixed controls and no zoom or drag handlers',()=>{const h=host();h.page.media='photo.img';h.page.mediaKind='review';h.page.mediaReviewToken='exact';h.page.historyActive=true;h.page.history=[{id:'one',kind:'Photo'},{id:'two',kind:'Photo'}];h.page.panel='review';h.page.draw();const image=h.widgets.find(w=>w.src==='photo.img');assert.deepEqual([image.x,image.y,image.w,image.h],[0,0,390,450]);assert.equal(image.auto_scale_obj_fit,false);assert.deepEqual(Object.keys(image.listeners),[]);assert.ok(!h.widgets.some(w=>/^(plus|minus)(96)?\.png$/.test(w.normal_src||'')));const controls=h.widgets.filter(w=>w.normal_src).map(w=>[w.normal_src,w.x,w.y]);let selected=null;h.page.loadHistory=i=>selected=i;h.gesture(3);assert.equal(selected,1);assert.deepEqual(h.widgets.filter(w=>w.normal_src).map(w=>[w.normal_src,w.x,w.y]),controls);for(const w of h.widgets)assert.ok(w.x>=0&&w.y>=0&&w.x+w.w<=390&&w.y+w.h<=450);h.page.goBack();assert.equal(h.page.panel,'main')});
+
+
+test('phone mode changes update the watch dashboard in both directions from read-only status', async () => {
+ const intervals = new Map()
+ let next = 0
+ const h = host(false, {
+  setInterval: (fn, ms) => { intervals.set(++next, {fn, ms}); return next },
+  clearInterval: id => intervals.delete(id)
+ })
+ let phoneMode = 'Photo'
+ const operations = []
+ h.page.request = async ({params}) => {
+  operations.push(params.op)
+  return {id: params.id, ok: true, state: {mode: phoneMode, ready: true}}
+ }
+ const refresh = [...intervals.values()].find(timer => timer.ms === 2000)
+ assert.ok(refresh, 'connected camera dashboard refreshes every two seconds')
+ for (const mode of ['Video', 'Slow Motion', 'Timelapse', 'Photo']) {
+  phoneMode = mode
+  await refresh.fn()
+  assert.equal(h.page.modeWidget.text, mode)
+  assert.ok(h.widgets.some(w => w.src === (mode === 'Photo' ? 'shutter.png' : 'record.png')))
+ }
+ assert.deepEqual(operations, ['STATUS', 'STATUS', 'STATUS', 'STATUS'])
+ h.page.navigate('settings')
+ assert.deepEqual([...intervals.values()].map(timer => timer.ms), [10000])
+ h.page.onDestroy()
+ assert.equal(intervals.size, 0)
+})
+
+test('watch exit acknowledges detachment before leaving and resets the page display timeout', async () => {
+ const calls=[]
+ const h=host(false,{
+  setPageBrightTime:({brightTime})=>calls.push(brightTime),
+  resetPageBrightTime:()=>calls.push('display reset')
+ })
+ let acknowledge
+ h.page.request=({method})=>{
+  calls.push(method)
+  return new Promise(resolve=>{acknowledge=resolve})
+ }
+ const exit=h.page.exitControls()
+ assert.equal(h.backCount(),0)
+ await h.page.send('STATUS')
+ assert.deepEqual(calls,[60000,'DETACH'])
+ acknowledge({ok:true})
+ await exit
+ assert.deepEqual(calls,[60000,'DETACH','display reset'])
+ assert.equal(h.backCount(),1)
+})
+
+test('OS page destruction reports presence loss without sending the phone stop command', ()=>{
+ const h=host()
+ const calls=[]
+ h.page.call=async data=>calls.push(data.detach?'detach':data.close?'stop':'other')
+ h.page.onDestroy()
+ assert.deepEqual(calls,['detach'])
+})

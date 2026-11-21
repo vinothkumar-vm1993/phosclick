@@ -1,18 +1,13 @@
-# Validation and release scope
+# Validation
 
-The published source matches the tested application line: Android 0.9.4 / watch 0.6.17. The store build changes the registered Zepp application ID to 1136713 and disables debug mode. The APK is signed for public distribution; it is not the earlier debug certificate.
+The latest release source is Android 0.9.5 / watch 0.6.19. The store package uses app ID 1136713, version code 35 and disabled debug mode. The signed Android APK uses the same release certificate as Android 0.9.4.
 
-| Check | Result / scope |
+| Check | Result |
 | --- | --- |
-| Watch/Side Service automated suite | 79 checks passing across Watch and Side Service; publication tree rerun passed |
-| Android JVM tests | 25 release-variant tests passing, zero failures |
-| Release APK assembly and lint | Clean publication build successful; release lint has no errors |
-| Pixel camera, media, lock/exit, UI regression | 32 native checks on 0.9.3, seven targeted checks on 0.9.4; 33 unique checks across those runs, not a full latest-version 33-test run |
-| Watch 0.6.17 large aspect-fit review without zoom/pan | User physically confirmed working |
-| Photo/video, front/rear, single haptic, countdown, history/delete | Physical confirmations on the supported development device pair |
-| Earlier locked/idle endurance | 28m44s on Android 0.9.0, start/end captures; not a new 0.9.4 endurance run |
-| Real out-of-range walking test | Not physically completed; remains unverified |
-| Real low-battery/storage thresholds | Logic tested; physical warning conditions not induced |
-| Other Android phones / other regional watch targets | Not physically validated |
+| Watch and Side Service automated suites | 83 passed, including phone-mode changes, watch display setup and orderly detach |
+| Android 0.9.5 release assembly, unit tests and lint | Signed APK verified, 25 unit tests passed and release lint passed |
+| Pixel 6a Android bridge test | Passed: authorized detach clears watch presence, keeps the bridge running and allows reconnect. Unauthorized detach is rejected. |
+| Watch pairing and capture features | Development setup tested with Pixel 6a and the Indian Active 2 Square (source 10223875, firmware 4.6.0.3, API 402). Other included regional variants and other phones have limited validation. |
+| Watch timeout and watch-close UI | User reported the update working. Automated tests cover the requested timeout and detach signal. Firmware timing and abrupt-close behavior were not independently measured. |
 
-Automated checks cannot establish real Bluetooth range, subjective smoothness, battery life on every device, or store approval. No claim of zero bugs, zero battery drain or universal hardware support is made. Release signing/package registration do not substitute for testing the store-installed pair. Report regressions with versions and reproducible steps.
+Earlier physical runs covered capture, media review, lock and exit behavior on the same device pair. Those runs were spread across previous versions (including Android 0.9.3 and 0.9.4). See [compatibility](COMPATIBILITY.md) for unsupported devices and hardware limitations.

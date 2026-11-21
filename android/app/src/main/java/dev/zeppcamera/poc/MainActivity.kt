@@ -101,7 +101,13 @@ class MainActivity:AppCompatActivity() {
     }
     private fun updateResourceWarning(){
         val warning=if(paired)ResourceWarning.label(cachedState.optString("resourceWarning"))else""
-        val text=warning.ifEmpty{if(cachedState.has("sessionActive")&&!cachedState.optBoolean("sessionActive"))"Disconnected"else if(cachedState.optBoolean("connectionLive"))"Watch connected"else if(paired)"Ready for watch"else"Waiting for watch"}
+        val text=when{
+            cachedState.has("sessionActive")&&!cachedState.optBoolean("sessionActive")->"Disconnected"
+            paired&&!cachedState.optBoolean("connectionLive")->"Watch disconnected"
+            warning.isNotEmpty()->warning
+            cachedState.optBoolean("connectionLive")->"Watch connected"
+            else->"Waiting for watch"
+        }
         if(relayStatus.text.toString()!=text)relayStatus.text=text
         if(resourceLabel!=warning){relayStatus.setTextColor(if(warning.isNotEmpty())0xffffcf69.toInt()else 0xffa1a9b4.toInt());relayStatus.setCompoundDrawablesRelativeWithIntrinsicBounds(if(warning.isNotEmpty())R.drawable.ic_action_warning else 0,0,0,0);relayStatus.compoundDrawablePadding=dp(6);resourceLabel=warning}
     }

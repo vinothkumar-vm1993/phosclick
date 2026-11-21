@@ -1,6 +1,6 @@
 # WristSnap privacy statement
 
-Effective: 17 November 2026. Applies to Android 0.9.4 and watch 0.6.17.
+Updated: 21 November 2026. Applies to Android 0.9.5 and watch 0.6.19.
 
 WristSnap controls the camera on your Android phone from a supported Zepp OS watch. The app does not require a WristSnap account and contains no advertising or analytics service.
 

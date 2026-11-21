@@ -26,3 +26,26 @@ test('review transfers alternate two bounded files to avoid stale image cache',a
 test('accepted timed shutter sends remaining phone duration once without replay',async()=>{const h=host();const calls=[],progress=[];h.side.http=async(path,body)=>{calls.push(path);return path==='/status'?{status:200,value:{state:{countdownRemainingMs:2750}}}:path.startsWith('/result/')?{status:200,value:{id:'timed',ok:true}}:{status:202,value:{}}};h.side.call=async p=>progress.push(p);let result;await h.side.onRequest({method:'COMMAND',params:{id:'timed',op:'SHUTTER',progress:true}},(_,r)=>result=r);assert.equal(calls.filter(p=>p==='/command').length,1);assert.equal(progress[0].captureProgress.remainingMs,2750);assert.equal(progress[0].captureProgress.requestId,'timed');assert.equal(result.ok,true);h.side.onDestroy()});
 
 test('countdown progress failure never replays an accepted shutter',async()=>{const h=host();let posts=0;h.side.http=async(path)=>{if(path==='/command'){posts++;return{status:202,value:{}}};if(path==='/status')throw Error('temporary progress failure');return{status:200,value:{id:'once',ok:true}}};let r;await h.side.onRequest({method:'COMMAND',params:{id:'once',op:'SHUTTER',progress:true}},(_,value)=>r=value);assert.equal(posts,1);assert.equal(r.ok,true);h.side.onDestroy()});
+
+test('detach follows an in-flight heartbeat and reconnect restores read-only updates', async ()=>{
+ const h=host()
+ const paths=[]
+ let releaseStatus
+ h.storage.set('localCapability','secret')
+ h.ctx.fetch=async ({url})=>{
+  const path=url.replace('http://127.0.0.1:47835','')
+  paths.push(path)
+  if(path==='/status'&&paths.length===1)await new Promise(resolve=>{releaseStatus=resolve})
+  return {status:200,body:{ok:true}}
+ }
+ const status=h.side.http('/status')
+ const detach=h.side.detach()
+ await assert.rejects(h.side.http('/status'),/Watch controls closed/)
+ assert.deepEqual(paths,['/status'])
+ releaseStatus()
+ await Promise.all([status,detach])
+ assert.deepEqual(paths,['/status','/detach'])
+ await h.side.connect()
+ await h.side.http('/status')
+ assert.deepEqual(paths,['/status','/detach','/session','/status'])
+})
