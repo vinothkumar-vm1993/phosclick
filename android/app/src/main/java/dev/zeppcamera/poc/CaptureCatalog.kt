@@ -11,8 +11,8 @@ import android.media.MediaMetadataRetriever
 
 data class SavedCapture(val uri:Uri,val name:String,val mime:String,val kind:String,val date:Long,val duration:Long,val modified:Long=0){val video get()=mime.startsWith("video/")}
 class CaptureCatalog(private val context:Context){
-    // Preserve existing captures through the WristSnap rename without moving/deleting user media.
-    private val mediaPaths=arrayOf("Pictures/WristSnap/","Movies/WristSnap/","Pictures/ActionCamera/","Movies/ActionCamera/")
+    // Include media saved by earlier versions so it stays visible after an in-place update.
+    private val mediaPaths=arrayOf("Pictures/PhosClick/","Movies/PhosClick/","Pictures/WristSnap/","Movies/WristSnap/","Pictures/ActionCamera/","Movies/ActionCamera/")
     private val prefs=context.getSharedPreferences("media",Context.MODE_PRIVATE)
     fun record(uri:Uri,kind:String){
         if(uri==Uri.EMPTY)return
@@ -21,7 +21,7 @@ class CaptureCatalog(private val context:Context){
     fun lastUri():Uri?=prefs.getString("lastMedia",prefs.getString("lastPhoto",null))?.let(Uri::parse)
     fun latest(photoOnly:Boolean=false):Uri?{
         val type=MediaStore.Files.FileColumns.MEDIA_TYPE
-        val selection="($type=? OR $type=?) AND ${MediaStore.MediaColumns.RELATIVE_PATH} IN (?,?,?,?) AND ${MediaStore.MediaColumns.IS_PENDING}=0 AND ${MediaStore.MediaColumns.IS_TRASHED}=0"
+        val selection="($type=? OR $type=?) AND ${MediaStore.MediaColumns.RELATIVE_PATH} IN (${mediaPaths.joinToString(",") { "?" }}) AND ${MediaStore.MediaColumns.IS_PENDING}=0 AND ${MediaStore.MediaColumns.IS_TRASHED}=0"
         val args=arrayOf(MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE.toString(),(if(photoOnly)MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE else MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO).toString())+mediaPaths
         return context.contentResolver.query(MediaStore.Files.getContentUri("external"),arrayOf(MediaStore.MediaColumns._ID,type),selection,args,"${MediaStore.MediaColumns.DATE_ADDED} DESC, ${MediaStore.MediaColumns._ID} DESC")?.use{c->
             if(!c.moveToFirst())null else ContentUris.withAppendedId(if(c.getInt(1)==MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO)MediaStore.Video.Media.EXTERNAL_CONTENT_URI else MediaStore.Images.Media.EXTERNAL_CONTENT_URI,c.getLong(0))
@@ -46,14 +46,14 @@ class CaptureCatalog(private val context:Context){
         require(limit>0)
         val out=mutableListOf<SavedCapture>()
         val projection=arrayOf(MediaStore.Files.FileColumns._ID,MediaStore.MediaColumns.DISPLAY_NAME,MediaStore.MediaColumns.MIME_TYPE,MediaStore.MediaColumns.DATE_ADDED,MediaStore.Video.Media.DURATION,MediaStore.Files.FileColumns.MEDIA_TYPE,MediaStore.MediaColumns.DATE_MODIFIED)
-        val where="(${MediaStore.Files.FileColumns.MEDIA_TYPE}=? OR ${MediaStore.Files.FileColumns.MEDIA_TYPE}=?) AND ${MediaStore.MediaColumns.RELATIVE_PATH} IN (?,?,?,?) AND ${MediaStore.MediaColumns.IS_PENDING}=0 AND ${MediaStore.MediaColumns.IS_TRASHED}=0"
+        val where="(${MediaStore.Files.FileColumns.MEDIA_TYPE}=? OR ${MediaStore.Files.FileColumns.MEDIA_TYPE}=?) AND ${MediaStore.MediaColumns.RELATIVE_PATH} IN (${mediaPaths.joinToString(",") { "?" }}) AND ${MediaStore.MediaColumns.IS_PENDING}=0 AND ${MediaStore.MediaColumns.IS_TRASHED}=0"
         val args=arrayOf(MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE.toString(),MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO.toString())+mediaPaths
         context.contentResolver.query(MediaStore.Files.getContentUri("external"),projection,where,args,"${MediaStore.MediaColumns.DATE_ADDED} DESC, ${MediaStore.Files.FileColumns._ID} DESC")?.use{cursor->
             while(out.size<limit&&cursor.moveToNext()){
                 val id=cursor.getLong(0);val name=cursor.getString(1)?:"Capture";val mime=cursor.getString(2)?:continue;val video=cursor.getInt(5)==MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO
                 val uri=ContentUris.withAppendedId(if(video)MediaStore.Video.Media.EXTERNAL_CONTENT_URI else MediaStore.Images.Media.EXTERNAL_CONTENT_URI,id)
                 var stored=prefs.getString("kind:$id",null)
-                if(video&&stored==null&&!name.removePrefix("WristSnap-").startsWith("timelapse-",true)&&!name.removePrefix("WristSnap-").startsWith("SlowMotion-",true)){
+                if(video&&stored==null&&!MediaKinds.captureName(name).startsWith("timelapse-",true)&&!MediaKinds.captureName(name).startsWith("SlowMotion-",true)){
                     var retriever:MediaMetadataRetriever?=null
                     try{retriever=MediaMetadataRetriever();retriever.setDataSource(context,uri);val captureFps=retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_CAPTURE_FRAMERATE)?.toFloatOrNull();if(captureFps!=null){stored=MediaKinds.classify(mime,name,null,captureFps);prefs.edit().putString("kind:$id",stored).apply()}}catch(_:Exception){}finally{retriever?.release()}
                 }

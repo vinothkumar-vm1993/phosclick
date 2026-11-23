@@ -13,7 +13,7 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class MediaCatalogTest {
     private val context=InstrumentationRegistry.getInstrumentation().targetContext
-    @Test fun legacyCapturesRemainAvailableAfterWristSnapRename(){
+    @Test fun legacyCapturesRemainAvailableAfterPhosClickRename(){
         val resolver=context.contentResolver
         val uri=resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,ContentValues().apply{put(MediaStore.MediaColumns.DISPLAY_NAME,"RenameTest-${System.nanoTime()}.jpg");put(MediaStore.MediaColumns.MIME_TYPE,"image/jpeg");put(MediaStore.MediaColumns.RELATIVE_PATH,"Pictures/ActionCamera/");put(MediaStore.MediaColumns.IS_PENDING,1)})!!
         try{

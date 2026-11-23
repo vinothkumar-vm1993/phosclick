@@ -30,7 +30,7 @@ object ConnectionPanel {
         device(R.drawable.ic_action_phone)
         devices.addView(ImageView(context).apply{setImageResource(R.drawable.ic_action_link);imageTintList=android.content.res.ColorStateList.valueOf(muted);setPadding(dp(8),dp(8),dp(8),dp(8))},LinearLayout.LayoutParams(dp(48),dp(48)).apply{setMargins(dp(8),0,dp(8),0)})
         device(R.drawable.ic_action_watch);root.addView(devices)
-        root.addView(TextView(context).apply{text=if(connected)"Via Zepp · Keep camera open" else "Open WristSnap on your watch";textSize=16f;setTextColor(muted);gravity=Gravity.CENTER;setPadding(0,0,0,dp(20))},LinearLayout.LayoutParams(-1,-2))
+        root.addView(TextView(context).apply{text=if(connected)"Via Zepp · Keep camera open" else "Open PhosClick on your watch";textSize=16f;setTextColor(muted);gravity=Gravity.CENTER;setPadding(0,0,0,dp(20))},LinearLayout.LayoutParams(-1,-2))
         root.addView(MaterialButton(context).apply{text=if(connected)"Disconnect" else "Connect";isAllCaps=false;textSize=17f;cornerRadius=dp(20);setIconResource(R.drawable.ic_action_link);iconGravity=MaterialButton.ICON_GRAVITY_TEXT_START;contentDescription=if(connected)"Disconnect watch" else "Connect watch";setOnClickListener{dialog.dismiss();onConnect()}},LinearLayout.LayoutParams(-1,dp(60)))
         val secondary=LinearLayout(context)
         if(onHelp!=null)secondary.addView(MaterialButton(context,null,com.google.android.material.R.attr.materialButtonOutlinedStyle).apply{text="Help";strokeWidth=0;backgroundTintList=android.content.res.ColorStateList.valueOf(Color.TRANSPARENT);isAllCaps=false;setTextColor(muted);contentDescription="Connection help";setOnClickListener{dialog.dismiss();onHelp()}},LinearLayout.LayoutParams(0,dp(48),1f))

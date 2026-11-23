@@ -92,7 +92,7 @@ class SettingsActivity:AppCompatActivity(){
             row(content,"Save location","On phone",R.drawable.ic_action_gallery,false,"Media is saved on this phone",null)
             row(content,"Quick start","",R.drawable.ic_action_help,true,"Show quick start guide"){QuickStart.show(this){}}
             row(content,"Permissions","",R.drawable.ic_action_permissions,true,"Manage app permissions"){startActivity(Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS,Uri.parse("package:$packageName")))}
-            content.addView(TextView(this).apply{text="WristSnap · ${BuildConfig.VERSION_NAME}";textSize=16f;setTextColor(0xffa1a9b4.toInt());gravity=Gravity.CENTER;setPadding(0,dp(24),0,0)},LinearLayout.LayoutParams(-1,-2))
+            content.addView(TextView(this).apply{text="PhosClick · ${BuildConfig.VERSION_NAME}";textSize=16f;setTextColor(0xffa1a9b4.toInt());gravity=Gravity.CENTER;setPadding(0,dp(24),0,0)},LinearLayout.LayoutParams(-1,-2))
         }
         root.removeAllViews();root.addView(page,FrameLayout.LayoutParams(-1,-1))
         if(animate){page.alpha=0f;page.translationY=dp(8).toFloat();page.animate().alpha(1f).translationY(0f).setDuration(160).start()}

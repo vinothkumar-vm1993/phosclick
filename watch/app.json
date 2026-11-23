@@ -2,14 +2,14 @@
   "configVersion": "v3",
   "app": {
     "appId": 1136713,
-    "appName": "WristSnap",
+    "appName": "PhosClick",
     "appType": "app",
     "version": {
-      "code": 35,
-      "name": "0.6.19"
+      "code": 36,
+      "name": "0.6.20"
     },
     "icon": "icon.png",
-    "vender": "WristSnap",
+    "vender": "PhosClick",
     "description": "Camera control through the existing Zepp connection"
   },
   "permissions": [
@@ -55,7 +55,7 @@
   },
   "i18n": {
     "en-US": {
-      "appName": "WristSnap"
+      "appName": "PhosClick"
     }
   },
   "defaultLanguage": "en-US",

@@ -256,7 +256,7 @@ class MainActivity:AppCompatActivity() {
             override fun onSurfaceTextureDestroyed(t:android.graphics.SurfaceTexture):Boolean{val renderer=session?.renderer;if(renderer!=null)renderer.detach{t.release()}else t.release();return false}
             override fun onSurfaceTextureUpdated(t:android.graphics.SurfaceTexture){}
         }
-        show("Open WristSnap on your watch")
+        show("Open PhosClick on your watch")
     }
     private var session:CameraSessionService?=null
     private var serviceBound=false

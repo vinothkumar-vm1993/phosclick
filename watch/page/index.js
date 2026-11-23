@@ -14,14 +14,14 @@ Page(BasePage({
   try{this.guideStore=new LocalStorage();this.introVisible=!this.guideStore.getItem("guide_v1",false)}catch(e){this.introVisible=true}
   this.connectionHapticPlayed=false;this.alive=true;this.widgets=[];this.paired=false;this.panel='connection';this.busy=false;this.photoFirst=true;this.initializing=false;this.revision=0;this.statusFailures=0
   this.camera={mode:'Photo',quality:'HD',fps:30,timer:0,aspect:'4:3',photoSize:'Auto',flash:'OFF',torch:false,recording:false,ready:false}
-  this.notice='Open WristSnap on phone';this.connected=false;this.media=null;this.hapticStarts=0;this.touchUps=0
+  this.notice='Open PhosClick on phone';this.connected=false;this.media=null;this.hapticStarts=0;this.touchUps=0
   // Optional device features must never prevent the camera page from opening.
   try{this.vibrator=new Vibrator()}catch(e){}
 
  },
  text(x,y,w,h,size,text,color=0xffffff){const a=ui.createWidget(ui.widget.TEXT,{x,y,w,h,text:String(text??'—'),text_size:size,color,text_style:ui.text_style.WRAP,align_h:ui.align.CENTER_H});this.widgets.push(a);return a},
  button(x,y,w,h,label,action,color=0x22272e){const a=ui.createWidget(ui.widget.BUTTON,{x,y,w,h,text:String(label??'—'),text_size:24,color:0xffffff,normal_color:color,press_color:0x505760,radius:Math.min(20,h/2),click_func:action});this.widgets.push(a);return a},
- icon(x,y,name,action,size=72){const file=name+(size===96?'96':'');const a=ui.createWidget(ui.widget.BUTTON,{x,y,w:size,h:size,text:'',normal_src:file+'.png',press_src:file+'-pressed.png',click_func:action,longpress_func:()=>{this.hintReturn=this.panel;this.hintText={'flash-off':'Photo flash Off / Auto / On, or video torch', 'flash-auto':'Photo flash is automatic', 'flash-on':'Photo flash is on', 'torch-on':'Video torch is on; tap to turn off',gallery:'Left: older capture\nRight: newer capture',snapshot:'Request a still camera frame',switch:'Switch front or rear camera',connect:'Watch 0.6.19 · Zepp '+(this.bridgeVersion||'?')+' · phone '+(this.phoneVersion||'?'),settings:'Capture settings',shutter:'Take a photo',record:'Start recording',stop:'Stop and save recording',back:'Back',next:'Next page'}[name]||'Tap to select';this.navigate('hint')}});this.widgets.push(a);return a},
+ icon(x,y,name,action,size=72){const file=name+(size===96?'96':'');const a=ui.createWidget(ui.widget.BUTTON,{x,y,w:size,h:size,text:'',normal_src:file+'.png',press_src:file+'-pressed.png',click_func:action,longpress_func:()=>{this.hintReturn=this.panel;this.hintText={'flash-off':'Photo flash Off / Auto / On, or video torch', 'flash-auto':'Photo flash is automatic', 'flash-on':'Photo flash is on', 'torch-on':'Video torch is on; tap to turn off',gallery:'Left: older capture\nRight: newer capture',snapshot:'Request a still camera frame',switch:'Switch front or rear camera',connect:'Watch 0.6.20 · Zepp '+(this.bridgeVersion||'?')+' · phone '+(this.phoneVersion||'?'),settings:'Capture settings',shutter:'Take a photo',record:'Start recording',stop:'Stop and save recording',back:'Back',next:'Next page'}[name]||'Tap to select';this.navigate('hint')}});this.widgets.push(a);return a},
  connectionHaptic(){
   if(this.connectionHapticPlayed)return
   this.connectionHapticPlayed=true
@@ -54,7 +54,7 @@ Page(BasePage({
  },
  diagnose(event){
   if(!this.alive||!this.paired)return
-  const info={event,watchVersion:'0.6.19',captureWidget:'IMG',hapticStarts:this.hapticStarts,touchUps:this.touchUps,vibrationScene:this.lastHapticType}
+  const info={event,watchVersion:'0.6.20',captureWidget:'IMG',hapticStarts:this.hapticStarts,touchUps:this.touchUps,vibrationScene:this.lastHapticType}
   try{info.vibrationTypes=JSON.stringify({gentle:this.vibrator?.getType?.().GENTLE_SHORT,durationMs:12,stopMs:18,issue:this.hapticIssue||''})}catch(e){}
   try{this.call({diagnostics:info}).catch(()=>{})}catch(e){}
  },
@@ -159,7 +159,7 @@ Page(BasePage({
   if(this.panel==='exit'){
    this.icon(40,28,'back',()=>this.goBack());this.text(124,46,140,42,30,'Close?')
    this.icon(147,154,'close',()=>this.exitControls(),96)
-   this.text(50,274,290,42,26,'Close WristSnap')
+   this.text(50,274,290,42,26,'Close PhosClick')
    this.text(40,330,310,64,23,'Phone stays ready',0xa8b0bc)
    return
   }
@@ -312,7 +312,7 @@ Page(BasePage({
     }
     this.initializing=false;if(this.paired&&this.panel!=='error'){this.panel='main';if(status?.ok&&this.camera.ready)this.connectionHaptic()}this.draw()
    }
-   else{this.notice=r.pending?'Allow camera control on phone':String(r.error||'Open WristSnap on phone').replace('Error: ','');this.draw()}
+   else{this.notice=r.pending?'Allow camera control on phone':String(r.error||'Open PhosClick on phone').replace('Error: ','');this.draw()}
   }catch(e){const reason=e?.message||String(e);this.notice=/PHONE_APP_CLOSED|PHONE_INACTIVE|AUTH_REQUIRED|WATCH_REQUIRED/.test(reason)?reason:'Connection lost. Move phone closer';this.draw()}
   finally{this.connecting=false;this.initializing=false;if(this.alive)this.draw()}
  },

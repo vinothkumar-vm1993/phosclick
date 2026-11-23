@@ -14,7 +14,7 @@ class LocalSessionGate(initialToken:String?=null,private val now:()->Long=System
  @Synchronized fun hasToken()=token!=null
  @Synchronized fun openWindow(){window=now()+120000}
  @Synchronized fun enroll():String {
-  check(now()<window){"Open WristSnap on phone and tap Connect"}
+  check(now()<window){"Open PhosClick on phone and tap Connect"}
   check(ticket==null||now()>expiry){"Another approval is pending; wait or reopen Connect"}
   while(starts.isNotEmpty()&&now()-starts.first>300000)starts.removeFirst()
   check(starts.size<3){"Too many connection requests; wait five minutes"}

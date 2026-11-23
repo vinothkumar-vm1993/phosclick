@@ -1,5 +1,5 @@
 <resources>
-    <style name="Theme.WristSnap" parent="Theme.Material3.DayNight.NoActionBar">
+    <style name="Theme.PhosClick" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="android:windowBackground">#000000</item>
         <item name="android:colorBackground">#000000</item>
         <item name="android:windowLightStatusBar">false</item>
@@ -26,14 +26,14 @@
         <item name="colorOnSurface">#F0F3F7</item>
         <item name="colorOnSurfaceVariant">#C0C7D2</item>
         <item name="colorOutline">#424A56</item>
-        <item name="materialAlertDialogTheme">@style/ThemeOverlay.WristSnap.Dialog</item>
+        <item name="materialAlertDialogTheme">@style/ThemeOverlay.PhosClick.Dialog</item>
     </style>
-    <style name="ThemeOverlay.WristSnap.Dialog" parent="ThemeOverlay.Material3.MaterialAlertDialog">
-        <item name="shapeAppearanceOverlay">@style/ShapeAppearanceOverlay.WristSnap.Dialog</item>
+    <style name="ThemeOverlay.PhosClick.Dialog" parent="ThemeOverlay.Material3.MaterialAlertDialog">
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearanceOverlay.PhosClick.Dialog</item>
         <item name="colorPrimary">?attr/colorOnSurface</item>
         <item name="colorSecondary">?attr/colorOnSurfaceVariant</item>
     </style>
-    <style name="ShapeAppearanceOverlay.WristSnap.Dialog" parent="">
+    <style name="ShapeAppearanceOverlay.PhosClick.Dialog" parent="">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">28dp</item>
     </style>

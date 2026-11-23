@@ -9,7 +9,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-feature android:name="android.hardware.camera.any" android:required="true" />
-    <application android:name=".CameraApplication" android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher" android:dataExtractionRules="@xml/data_extraction_rules" android:label="WristSnap" android:theme="@style/Theme.WristSnap" android:allowBackup="false" android:supportsRtl="true">
+    <application android:name=".CameraApplication" android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher" android:dataExtractionRules="@xml/data_extraction_rules" android:label="PhosClick" android:theme="@style/Theme.PhosClick" android:allowBackup="false" android:supportsRtl="true">
         <service android:name=".CameraSessionService" android:exported="false" android:foregroundServiceType="camera|microphone" android:stopWithTask="false" />
         <activity android:name=".SettingsActivity" android:exported="false" />
         <activity android:name=".CapturesActivity" android:exported="false" />

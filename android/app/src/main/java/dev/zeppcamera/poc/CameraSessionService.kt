@@ -176,7 +176,7 @@ class CameraSessionService:android.app.Service(),androidx.lifecycle.LifecycleOwn
             paired->"Watch disconnected"
             else->"Ready for watch"
         }
-        return android.app.Notification.Builder(this,"camera_session").setSmallIcon(R.drawable.ic_action_shutter).setContentTitle("WristSnap").setContentText(notificationText).setOngoing(true).setOnlyAlertOnce(true).setContentIntent(open).addAction(android.app.Notification.Action.Builder(null,"Disconnect",stop).build()).build()
+        return android.app.Notification.Builder(this,"camera_session").setSmallIcon(R.drawable.ic_action_shutter).setContentTitle("PhosClick").setContentText(notificationText).setOngoing(true).setOnlyAlertOnce(true).setContentIntent(open).addAction(android.app.Notification.Action.Builder(null,"Disconnect",stop).build()).build()
     }
     private fun notifySession(){if(!stopping&&notificationKey!="${isRecording()}:$connectionLive:$paired")try{getSystemService(android.app.NotificationManager::class.java).notify(47835,notification())}catch(_:Exception){}}
     fun disconnect(){
@@ -236,7 +236,7 @@ class CameraSessionService:android.app.Service(),androidx.lifecycle.LifecycleOwn
         if(SystemClock.elapsedRealtime()-lastZoomPublish>80){lastZoomPublish=SystemClock.elapsedRealtime();listener?.invoke(lastMessage,state())}
         handler.postDelayed(this,16)
     }}
-    private fun startCamera(){if(!paired||stopping)return;val f=ProcessCameraProvider.getInstance(this);f.addListener({if(stopping)return@addListener;try{provider=f.get();bind{if(it==null&&!stopping&&wake==null)wake=getSystemService(PowerManager::class.java).newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,"WristSnap:Session").apply{acquire()};show(it?:"Ready")}}catch(e:Exception){show("Camera initialization failed: ${e.message}")}},main)}
+    private fun startCamera(){if(!paired||stopping)return;val f=ProcessCameraProvider.getInstance(this);f.addListener({if(stopping)return@addListener;try{provider=f.get();bind{if(it==null&&!stopping&&wake==null)wake=getSystemService(PowerManager::class.java).newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,"PhosClick:Session").apply{acquire()};show(it?:"Ready")}}catch(e:Exception){show("Camera initialization failed: ${e.message}")}},main)}
     private fun selector()=if(front)CameraSelector.DEFAULT_FRONT_CAMERA else CameraSelector.DEFAULT_BACK_CAMERA
     private fun info()=try{selector().filter(provider?.availableCameraInfos?:emptyList()).firstOrNull()}catch(_:Exception){null}
     private fun q(name:String)=when(name){"UHD"->Quality.UHD;"FHD"->Quality.FHD;else->Quality.HD}
@@ -473,7 +473,7 @@ class CameraSessionService:android.app.Service(),androidx.lifecycle.LifecycleOwn
     private fun capture(){
         if(!foreground||!ready){finishCapture(false,"Camera no longer active");return}
         if(mode=="Timelapse"){
-            val f=File(cacheDir,"WristSnap-Timelapse-${System.currentTimeMillis()}.mp4");lapseFile=f
+            val f=File(cacheDir,"PhosClick-Timelapse-${System.currentTimeMillis()}.mp4");lapseFile=f
             saving=true
             lapse.start(f){e->saving=false;if(e==null){startedAt=System.currentTimeMillis();show("Timelapse recording • 1 fps → 30 fps");handler.removeCallbacks(lapseClock);handler.post(lapseClock);finishCapture(true,"Timelapse started")}else finishCapture(false,e)};return
         }
@@ -493,7 +493,7 @@ class CameraSessionService:android.app.Service(),androidx.lifecycle.LifecycleOwn
         if(stopping||!foreground||!ready){cancelPhotos("Capture stopped");return}
         if(shotsTarget==0)return
         photoInFlight=true;saving=true;show(if(shotsTarget>1)"${shotsTaken+1}/$shotsTarget"else"Capturing…")
-        val values=ContentValues().apply{put(MediaStore.Images.Media.DISPLAY_NAME,"WristSnap-${System.currentTimeMillis()}-${java.util.UUID.randomUUID().toString().take(8)}.jpg");put(MediaStore.Images.Media.MIME_TYPE,"image/jpeg");put(MediaStore.Images.Media.RELATIVE_PATH,"Pictures/WristSnap")}
+        val values=ContentValues().apply{put(MediaStore.Images.Media.DISPLAY_NAME,"PhosClick-${System.currentTimeMillis()}-${java.util.UUID.randomUUID().toString().take(8)}.jpg");put(MediaStore.Images.Media.MIME_TYPE,"image/jpeg");put(MediaStore.Images.Media.RELATIVE_PATH,"Pictures/PhosClick")}
         val output=ImageCapture.OutputFileOptions.Builder(contentResolver,MediaStore.Images.Media.EXTERNAL_CONTENT_URI,values).build()
         fun failed(message:String){photoInFlight=false;saving=false;if(shotsTarget>0)cancelPhotos(message)else publish()}
         try{imageCapture!!.takePicture(output,main,object:ImageCapture.OnImageSavedCallback{
@@ -513,7 +513,7 @@ class CameraSessionService:android.app.Service(),androidx.lifecycle.LifecycleOwn
     private fun startVideo(){
         val capturedMode=mode
         try{
-            val values=ContentValues().apply{put(MediaStore.Video.Media.DISPLAY_NAME,"WristSnap-${if(capturedMode=="Slow Motion")"SlowMotion"else "Video"}-${System.currentTimeMillis()}.mp4");put(MediaStore.Video.Media.MIME_TYPE,"video/mp4");put(MediaStore.Video.Media.RELATIVE_PATH,"Movies/WristSnap")}
+            val values=ContentValues().apply{put(MediaStore.Video.Media.DISPLAY_NAME,"PhosClick-${if(capturedMode=="Slow Motion")"SlowMotion"else "Video"}-${System.currentTimeMillis()}.mp4");put(MediaStore.Video.Media.MIME_TYPE,"video/mp4");put(MediaStore.Video.Media.RELATIVE_PATH,"Movies/PhosClick")}
             val out=MediaStoreOutputOptions.Builder(contentResolver,MediaStore.Video.Media.EXTERNAL_CONTENT_URI).setContentValues(values).build()
             var pending=videoCapture!!.output.prepareRecording(this,out)
             if(mode=="Video"&&audioWanted&&ContextCompat.checkSelfPermission(this,Manifest.permission.RECORD_AUDIO)==PackageManager.PERMISSION_GRANTED)pending=pending.withAudioEnabled()
@@ -531,7 +531,7 @@ class CameraSessionService:android.app.Service(),androidx.lifecycle.LifecycleOwn
         if(lapse.running){
             val e=lapse.stop();val f=lapseFile;lapseFile=null
             if(e!=null||f==null){f?.delete();bind{};done(result(false,"Timelapse too short or failed: $e"));return}
-            try{val values=ContentValues().apply{put(MediaStore.Video.Media.DISPLAY_NAME,f.name);put(MediaStore.Video.Media.MIME_TYPE,"video/mp4");put(MediaStore.Video.Media.RELATIVE_PATH,"Movies/WristSnap");put(MediaStore.Video.Media.IS_PENDING,1)}
+            try{val values=ContentValues().apply{put(MediaStore.Video.Media.DISPLAY_NAME,f.name);put(MediaStore.Video.Media.MIME_TYPE,"video/mp4");put(MediaStore.Video.Media.RELATIVE_PATH,"Movies/PhosClick");put(MediaStore.Video.Media.IS_PENDING,1)}
                 val uri=contentResolver.insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI,values)?:error("MediaStore insert failed")
                 try{contentResolver.openOutputStream(uri)!!.use{o->f.inputStream().use{it.copyTo(o)}};contentResolver.update(uri,ContentValues().apply{put(MediaStore.Video.Media.IS_PENDING,0)},null,null)}catch(t:Exception){contentResolver.delete(uri,null,null);throw t}
                 rememberCapture(uri,"Timelapse");f.delete();bind{};done(result(true,"Timelapse saved • silent 30 fps MP4"))

@@ -13,22 +13,22 @@ AppSideService(BaseSideService({
    if(presence)this.presenceRequests.add(pending)
    r=await pending
   }
-  catch(e){throw Error('PHONE_APP_CLOSED: open WristSnap on phone')}
+  catch(e){throw Error('PHONE_APP_CLOSED: open PhosClick on phone')}
   finally{if(presence)this.presenceRequests.delete(pending)}
   const status=Number(r.status??r.statusCode)
-  if(!Number.isInteger(status)||status<200||status>599)throw Error('Invalid local HTTP response. Reopen WristSnap.')
+  if(!Number.isInteger(status)||status<200||status>599)throw Error('Invalid local HTTP response. Reopen PhosClick.')
   const value=typeof r.body==='string'?JSON.parse(r.body):r.body
-  if(!value||typeof value!=='object')throw Error('Invalid camera data. Reopen WristSnap.')
+  if(!value||typeof value!=='object')throw Error('Invalid camera data. Reopen PhosClick.')
   if(status>=400){if(status===401)settings.settingsStorage.removeItem('localCapability');throw Error(value?.error||'Phone connection failed')}
   return {status,value}
  },
  async connect(){
   if(this.detaching)await this.detaching.catch(()=>{})
   this.detached=false
-  if(settings.settingsStorage.getItem('localCapability')){try{const session=await this.http('/session');return{ok:true,bridgeVersion:'0.6.19',phoneVersion:session.value.version,sessionId:session.value.sessionId}}catch(e){if(!String(e).includes('AUTH_REQUIRED'))throw e}}
+  if(settings.settingsStorage.getItem('localCapability')){try{const session=await this.http('/session');return{ok:true,bridgeVersion:'0.6.20',phoneVersion:session.value.version,sessionId:session.value.sessionId}}catch(e){if(!String(e).includes('AUTH_REQUIRED'))throw e}}
   let ticket=settings.settingsStorage.getItem('localTicket')
   if(!ticket){const r=await this.http('/enroll',{},true);ticket=r.value.ticket;settings.settingsStorage.setItem('localTicket',ticket);return{ok:false,pending:true}}
-  try{const r=await this.http('/enroll/'+ticket,null,true);if(!r.value.approved)return{ok:false,pending:true};settings.settingsStorage.setItem('localCapability',r.value.token);settings.settingsStorage.removeItem('localTicket');const session=await this.http('/session');return{ok:true,bridgeVersion:'0.6.19',phoneVersion:session.value.version,sessionId:session.value.sessionId}}
+  try{const r=await this.http('/enroll/'+ticket,null,true);if(!r.value.approved)return{ok:false,pending:true};settings.settingsStorage.setItem('localCapability',r.value.token);settings.settingsStorage.removeItem('localTicket');const session=await this.http('/session');return{ok:true,bridgeVersion:'0.6.20',phoneVersion:session.value.version,sessionId:session.value.sessionId}}
   catch(e){settings.settingsStorage.removeItem('localTicket');throw e}
  },
  async detach(){
@@ -55,7 +55,7 @@ AppSideService(BaseSideService({
    throw Error('Outcome unknown. Check phone before retrying shutter.')
   }catch(e){res(null,{ok:false,error:String(e)})}
  },
- onCall(data){if(data.detach)this.detach().catch(()=>{});if(data.diagnostics)this.http('/diagnostics',{...data.diagnostics,sideVersion:'0.6.19'}).catch(()=>{});if(data.mediaPath)this.transfer(data.mediaPath,data.kind,data.requestId);if(data.close){this.generation=(this.generation||0)+1;clearTimeout(this.imageTimer);this.imageBusy=false;this.task?.cancel?.();this.http('/close',{}).catch(()=>{})}},
+ onCall(data){if(data.detach)this.detach().catch(()=>{});if(data.diagnostics)this.http('/diagnostics',{...data.diagnostics,sideVersion:'0.6.20'}).catch(()=>{});if(data.mediaPath)this.transfer(data.mediaPath,data.kind,data.requestId);if(data.close){this.generation=(this.generation||0)+1;clearTimeout(this.imageTimer);this.imageBusy=false;this.task?.cancel?.();this.http('/close',{}).catch(()=>{})}},
  async transfer(path,kind,requestId){
   if(typeof requestId!=='string'||!/^([A-Za-z0-9_-]{1,80})$/.test(requestId))return
   if(this.imageBusy){this.call({imageError:'Wait for the current image transfer',requestId}).catch(()=>{});return}

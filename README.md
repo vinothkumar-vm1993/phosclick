@@ -1,10 +1,14 @@
-# WristSnap
+# PhosClick
 
-WristSnap lets you control your Android phone camera from an Amazfit Active 2 Square through its existing connection to the Zepp Android app.
+**Android camera remote for Amazfit Active 2 Square.**
 
-[Download the signed Android APK](https://github.com/vinothkumar-vm1993/wristsnap/releases/latest) · [Setup and troubleshooting](docs/SETUP.md) · [Compatibility](docs/COMPATIBILITY.md) · [Privacy](docs/PRIVACY.md)
+PhosClick lets you control your Android phone camera from an Amazfit Active 2 Square through its existing connection to the Zepp Android app.
 
-The source versions are **Android 0.9.5** and **watch 0.6.19**. Check the version shown on the GitHub Releases page before downloading. Watch installation through Zepp Store depends on review and availability. Developers can build the watch package from source for Zepp Developer Mode preview.
+[Download the signed Android APK](https://github.com/vinothkumar-vm1993/phosclick/releases/latest) · [Setup and troubleshooting](docs/SETUP.md) · [Compatibility](docs/COMPATIBILITY.md) · [Privacy](docs/PRIVACY.md)
+
+Existing installs signed with the release certificate can update in place. Earlier captures remain available in PhosClick’s gallery.
+
+The source versions are **Android 0.9.6** and **watch 0.6.20**. Check the version shown on the GitHub Releases page before downloading. Watch installation through Zepp Store depends on review and availability. Developers can build the watch package from source for Zepp Developer Mode preview.
 
 ## Supported devices
 
@@ -14,7 +18,7 @@ The source versions are **Android 0.9.5** and **watch 0.6.19**. Check the versio
 | Watch | **Amazfit Active 2 (Square)** and **Amazfit Active 2 NFC (Square)**, 390 × 450. Package targets: 10223875, 10223872 and 10223873. |
 | Tested watch | Indian Active 2 (Square), source **10223875**, firmware **4.6.0.3**, API level **402**. The two NFC targets are included in the package and have yet to be physically tested. |
 | Zepp OS runtime | Manifest minimum **API 3.6**, target and compatibility **API 4.0**. These are application API versions. |
-| Zepp phone app | Official **Zepp for Android** on the same phone as WristSnap. Tested with Zepp **10.10.5-play**. |
+| Zepp phone app | Official **Zepp for Android** on the same phone as PhosClick. Tested with Zepp **10.10.5-play**. |
 
 The supported watch list is limited to these square targets. Active 2 round models, other Amazfit watches, Wear OS and Apple Watch are outside this release's scope. An Android phone is required.
 
@@ -37,22 +41,22 @@ The app displays low phone battery and storage warnings. Camera zoom is availabl
 ## Set up and connect
 
 1. Install the signed APK from GitHub Releases and grant Camera permission. Enable Microphone only if you want sound in normal video.
-2. Connect the watch to the official Zepp Android app. Install WristSnap from the watch's app store once it is available for your device.
-3. Open WristSnap on the unlocked phone, then open it on the watch. Approve the local connection on the phone when prompted.
+2. Connect the watch to the official Zepp Android app. Install PhosClick from the watch's app store once it is available for your device.
+3. Open PhosClick on the unlocked phone, then open it on the watch. Approve the local connection on the phone when prompted.
 4. Tap the watch shutter. Photos and videos are saved to the phone. See the setup guide for controls, older debug APK migration, developer preview and troubleshooting.
 
 ## Sessions and privacy
 
-WristSnap uses the watch's existing Zepp connection and an authenticated loopback service on the same phone. Setup requires one phone-side approval. The app has no extra Bluetooth pairing, account, typed pairing key or cloud relay. Commands and requested thumbnails are exchanged locally. WristSnap does not send analytics or upload captures.
+PhosClick uses the watch's existing Zepp connection and an authenticated loopback service on the same phone. Setup requires one phone-side approval. The app has no extra Bluetooth pairing, account, typed pairing key or cloud relay. Commands and requested thumbnails are exchanged locally. PhosClick does not send analytics or upload captures.
 
-Start the phone session with WristSnap visible. An active session can continue with the phone locked or after pressing Home, subject to Android and device restrictions. With Android **0.9.5** and watch **0.6.19**, closing the watch controls updates the phone connection status while keeping the phone session and any recording active. If the close signal cannot reach the phone, the connection indicator clears after its timeout. Use **Disconnect** on the phone, root Back or remove the app from Recents to stop the Android camera session.
+Start the phone session with PhosClick visible. An active session can continue with the phone locked or after pressing Home, subject to Android and device restrictions. With Android **0.9.6** and watch **0.6.20**, closing the watch controls updates the phone connection status while keeping the phone session and any recording active. If the close signal cannot reach the phone, the connection indicator clears after its timeout. Use **Disconnect** on the phone, root Back or remove the app from Recents to stop the Android camera session.
 
 ## Support and contact
 
-For help with WristSnap, email [vinothkumar.vm1993@gmail.com](mailto:vinothkumar.vm1993@gmail.com). For bugs or feature requests, [open a GitHub issue](https://github.com/vinothkumar-vm1993/wristsnap/issues). Include your phone model, Android version, watch firmware and both WristSnap versions so the issue can be reproduced.
+For help with PhosClick, email [vinothkumar.vm1993@gmail.com](mailto:vinothkumar.vm1993@gmail.com). For bugs or feature requests, [open a GitHub issue](https://github.com/vinothkumar-vm1993/phosclick/issues). Include your phone model, Android version, watch firmware and both PhosClick versions so the issue can be reproduced.
 
 ## Development
 
 This repository includes the Android Kotlin companion, Zepp Device App, Side Service and automated tests. See [build instructions](docs/DEVELOPMENT.md) and the [validation matrix](docs/VALIDATION.md).
 
-[MIT License](LICENSE) · [Third-party notices](THIRD_PARTY_NOTICES.txt) · [Report an issue](https://github.com/vinothkumar-vm1993/wristsnap/issues)
+[MIT License](LICENSE) · [Third-party notices](THIRD_PARTY_NOTICES.txt) · [Report an issue](https://github.com/vinothkumar-vm1993/phosclick/issues)

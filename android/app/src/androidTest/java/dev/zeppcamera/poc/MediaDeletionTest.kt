@@ -27,7 +27,7 @@ class MediaDeletionTest {
     private val owned=mutableListOf<Uri>()
     private val activities=mutableListOf<Activity>()
     private fun insert(video:Boolean=false,color:Int=Color.RED):Uri{
-        val values=ContentValues().apply{put(MediaStore.MediaColumns.DISPLAY_NAME,"DeletionTest-${UUID.randomUUID()}"+if(video)".mp4"else".jpg");put(MediaStore.MediaColumns.MIME_TYPE,if(video)"video/mp4"else"image/jpeg");put(MediaStore.MediaColumns.RELATIVE_PATH,if(video)"Movies/WristSnap/"else"Pictures/WristSnap/");put(MediaStore.MediaColumns.IS_PENDING,1)}
+        val values=ContentValues().apply{put(MediaStore.MediaColumns.DISPLAY_NAME,"DeletionTest-${UUID.randomUUID()}"+if(video)".mp4"else".jpg");put(MediaStore.MediaColumns.MIME_TYPE,if(video)"video/mp4"else"image/jpeg");put(MediaStore.MediaColumns.RELATIVE_PATH,if(video)"Movies/PhosClick/"else"Pictures/PhosClick/");put(MediaStore.MediaColumns.IS_PENDING,1)}
         val uri=context.contentResolver.insert(if(video)MediaStore.Video.Media.EXTERNAL_CONTENT_URI else MediaStore.Images.Media.EXTERNAL_CONTENT_URI,values)!!;owned+=uri
         context.contentResolver.openOutputStream(uri)!!.use{out->if(video)ins.context.assets.open("deletion-fixture.mp4").use{it.copyTo(out)}else{val bitmap=Bitmap.createBitmap(96,96,Bitmap.Config.ARGB_8888);bitmap.eraseColor(color);bitmap.compress(Bitmap.CompressFormat.JPEG,95,out);bitmap.recycle()}}
         context.contentResolver.update(uri,ContentValues().apply{put(MediaStore.MediaColumns.IS_PENDING,0)},null,null)

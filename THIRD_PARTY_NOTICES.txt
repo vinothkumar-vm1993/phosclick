@@ -1,6 +1,6 @@
 Third-party notices
 
-WristSnap source is MIT licensed (see LICENSE).
+PhosClick source is MIT licensed (see LICENSE).
 
 The watch package includes Zepp ZML (@zeppos/zml 0.0.43), distributed under Apache License 2.0 by its upstream authors. Source: https://github.com/zepp-health/zml . Used for watch/Side Service messaging and image/file-transfer integration.
 

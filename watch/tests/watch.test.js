@@ -109,7 +109,7 @@ test('main camera flip does not send SWITCH during recording',()=>{
 });
 
 test('phone-closed copy hides bridge codes and fits separated connection text area',()=>{
- const h=host(true);h.page.notice='PHONE_APP_CLOSED: open WristSnap on Pixel';h.page.draw();
+ const h=host(true);h.page.notice='PHONE_APP_CLOSED: open PhosClick on Pixel';h.page.draw();
  const message=h.widgets.find(w=>w.type==='text'&&w.y===238);assert.equal(message.text,'Open phone app');assert.equal(message.h,72)
  assert.ok(!h.widgets.some(w=>/Pixel|PHONE_APP_CLOSED/.test(w.text||'')))
  const connect=h.widgets.find(w=>w.normal_src==='connect.png');assert.ok(message.y+message.h<connect.y)
@@ -235,7 +235,7 @@ test('transport timeout keeps Move phone closer during repeated reconnect attemp
  const h=host();h.page.paired=false;h.page.panel='connection';h.page.request=async()=>{throw Error('request timeout')};for(let i=0;i<3;i++){await h.page.connectLocal();assert.ok(h.widgets.some(w=>w.text==='Move phone closer'));assert.ok(!h.widgets.some(w=>w.text==='Open phone app'))}
 });
 test('explicit phone-app-closed response asks Open phone app instead of range advice',async()=>{
- const h=host();h.page.paired=false;h.page.panel='connection';h.page.request=async()=>({ok:false,error:'PHONE_APP_CLOSED: open WristSnap on phone'});await h.page.connectLocal();assert.ok(h.widgets.some(w=>w.text==='Open phone app'));assert.ok(!h.widgets.some(w=>w.text==='Move phone closer'))
+ const h=host();h.page.paired=false;h.page.panel='connection';h.page.request=async()=>({ok:false,error:'PHONE_APP_CLOSED: open PhosClick on phone'});await h.page.connectLocal();assert.ok(h.widgets.some(w=>w.text==='Open phone app'));assert.ok(!h.widgets.some(w=>w.text==='Move phone closer'))
 });
 test('recovery preserves an existing recording and never replays shutter or stop',async()=>{
  const h=host();h.page.paired=false;h.page.panel='connection';h.page.photoFirst=false;const ops=[];h.page.call=async()=>{};h.page.request=async q=>{ops.push(q.method==='CONNECT'?'CONNECT':q.params.op);return q.method==='CONNECT'?{ok:true,sessionId:'same-session'}:{id:q.params.id,ok:true,state:{mode:'Video',recording:true,ready:true,startedAt:1234}}};await h.page.connectLocal();assert.equal(h.page.panel,'main');assert.equal(h.page.camera.recording,true);assert.equal(h.page.camera.startedAt,1234);assert.deepEqual(ops,['CONNECT','STATUS'])

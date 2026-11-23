@@ -20,7 +20,7 @@ class ReviewDeletionTest {
  private val ins=InstrumentationRegistry.getInstrumentation();private val context=ins.targetContext
  private val fixtures=mutableListOf<Uri>();private var activity:MainActivity?=null
  private fun insert(video:Boolean=false,kind:String="Video"):Uri{
-  val uri=context.contentResolver.insert(if(video)MediaStore.Video.Media.EXTERNAL_CONTENT_URI else MediaStore.Images.Media.EXTERNAL_CONTENT_URI,ContentValues().apply{put(MediaStore.MediaColumns.DISPLAY_NAME,"ReviewDeleteTest-${System.nanoTime()}"+if(video)".mp4"else".jpg");put(MediaStore.MediaColumns.MIME_TYPE,if(video)"video/mp4"else"image/jpeg");put(MediaStore.MediaColumns.RELATIVE_PATH,if(video)"Movies/WristSnap/"else"Pictures/WristSnap/");put(MediaStore.MediaColumns.IS_PENDING,1)})!!;fixtures+=uri
+  val uri=context.contentResolver.insert(if(video)MediaStore.Video.Media.EXTERNAL_CONTENT_URI else MediaStore.Images.Media.EXTERNAL_CONTENT_URI,ContentValues().apply{put(MediaStore.MediaColumns.DISPLAY_NAME,"ReviewDeleteTest-${System.nanoTime()}"+if(video)".mp4"else".jpg");put(MediaStore.MediaColumns.MIME_TYPE,if(video)"video/mp4"else"image/jpeg");put(MediaStore.MediaColumns.RELATIVE_PATH,if(video)"Movies/PhosClick/"else"Pictures/PhosClick/");put(MediaStore.MediaColumns.IS_PENDING,1)})!!;fixtures+=uri
   context.contentResolver.openOutputStream(uri)!!.use{out->if(video)ins.context.assets.open("deletion-fixture.mp4").use{it.copyTo(out)}else{val b=Bitmap.createBitmap(96,96,Bitmap.Config.ARGB_8888);b.eraseColor(Color.RED);b.compress(Bitmap.CompressFormat.JPEG,95,out);b.recycle()}}
   context.contentResolver.update(uri,ContentValues().apply{put(MediaStore.MediaColumns.IS_PENDING,0)},null,null);CaptureCatalog(context).record(uri,if(video)kind else"Photo");return uri
  }
