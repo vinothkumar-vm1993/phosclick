@@ -101,7 +101,11 @@ class SettingsActivity:AppCompatActivity(){
     private fun row(parent:LinearLayout,label:String,value:String,icon:Int,enabled:Boolean,description:String,action:(()->Unit)?){
         val card=MaterialCardView(this).apply{radius=dp(20).toFloat();setCardBackgroundColor(Color.BLACK);strokeColor=0xff24282e.toInt();strokeWidth=dp(1);contentDescription=description;isClickable=enabled&&action!=null;if(isClickable)setOnClickListener{action?.invoke()}}
         val line=LinearLayout(this).apply{gravity=Gravity.CENTER_VERTICAL;minimumHeight=dp(72);setPadding(dp(16),dp(12),dp(16),dp(12))}
-        line.addView(ImageView(this).apply{if(icon!=0)setImageResource(icon)else visibility=View.INVISIBLE;imageTintList=android.content.res.ColorStateList.valueOf(if(enabled)Color.WHITE else 0xffa1a9b4.toInt());importantForAccessibility=View.IMPORTANT_FOR_ACCESSIBILITY_NO},LinearLayout.LayoutParams(dp(24),dp(24)).apply{marginEnd=dp(16)})
+        line.addView(ImageView(this).apply{if(icon!=0)setImageResource(icon)else visibility=View.INVISIBLE;imageTintList=android.content.res.ColorStateList.valueOf(when {
+            !enabled -> 0xffa1a9b4.toInt()
+            icon==R.drawable.ic_action_check -> getColor(R.color.cobalt_primary)
+            else -> Color.WHITE
+        });importantForAccessibility=View.IMPORTANT_FOR_ACCESSIBILITY_NO},LinearLayout.LayoutParams(dp(24),dp(24)).apply{marginEnd=dp(16)})
         line.addView(TextView(this).apply{text=label;textSize=18f;setTextColor(Color.WHITE)},LinearLayout.LayoutParams(0,-2,1f))
         if(value.isNotEmpty())line.addView(TextView(this).apply{text=value;textSize=16f;maxWidth=dp(136);gravity=Gravity.END;setTextColor(0xffc0c7d2.toInt());setPadding(dp(12),0,0,0)},LinearLayout.LayoutParams(-2,-2))
         if(enabled&&action!=null&&picker==null)line.addView(ImageView(this).apply{setImageResource(R.drawable.ic_action_back);rotation=180f;importantForAccessibility=View.IMPORTANT_FOR_ACCESSIBILITY_NO},LinearLayout.LayoutParams(dp(20),dp(20)).apply{marginStart=dp(8)})

@@ -1,6 +1,6 @@
 # Compatibility
 
-Android minimum: API 31 / Android 12. Compile and target SDK: 36. The existing package identifier remains `dev.zeppcamera.poc` to preserve identity. APK version 0.9.7, versionCode 42.
+Android minimum: API 31 / Android 12. Compile and target SDK: 36. The existing package identifier remains `dev.zeppcamera.poc` to preserve identity. APK version 0.9.8, versionCode 43.
 
 Physically tested: Google Pixel 6a on Android 17/API 37, official Zepp 10.10.5-play. Other Android devices have not been comprehensively tested. Features are negotiated from the selected CameraX/Camera2 lens; high frame rates, 4K, flash/torch and zoom differ by hardware. Front-camera capabilities can differ from rear-camera capabilities. Background camera access is subject to Android and OEM policy.
 

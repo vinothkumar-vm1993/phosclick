@@ -60,7 +60,7 @@ class CapturesActivity:AppCompatActivity(){
     }
     private fun renderSelection(h:Holder){
         val item=h.item?:return;val checked=selected.contains(item.uri)
-        h.selection.visibility=if(checked)View.VISIBLE else View.GONE;h.card.strokeWidth=if(checked)dp(2)else 0;h.card.strokeColor=Color.WHITE;h.card.isChecked=checked
+        h.selection.visibility=if(checked)View.VISIBLE else View.GONE;h.card.strokeWidth=if(checked)dp(2)else 0;h.card.strokeColor=getColor(R.color.cobalt_primary);h.card.isChecked=checked
         h.card.contentDescription=(if(selected.isEmpty())"Open"else if(checked)"Deselect"else"Select")+" ${item.kind} capture ${h.number}"
     }
     private fun deleteSelection(){

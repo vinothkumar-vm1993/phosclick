@@ -6,18 +6,18 @@
         <item name="android:windowLightNavigationBar">false</item>
         <item name="android:statusBarColor">#000000</item>
         <item name="android:navigationBarColor">#000000</item>
-        <item name="colorPrimary">?attr/colorOnSurface</item>
-        <item name="colorOnPrimary">#101318</item>
-        <item name="colorPrimaryContainer">#30363E</item>
-        <item name="colorOnPrimaryContainer">?attr/colorOnSurface</item>
-        <item name="colorSecondary">?attr/colorOnSurfaceVariant</item>
-        <item name="colorOnSecondary">#19212C</item>
-        <item name="colorSecondaryContainer">#30363E</item>
-        <item name="colorOnSecondaryContainer">?attr/colorOnSurface</item>
-        <item name="colorTertiary">?attr/colorOnSurfaceVariant</item>
-        <item name="colorOnTertiary">#101318</item>
-        <item name="colorTertiaryContainer">#30363E</item>
-        <item name="colorOnTertiaryContainer">?attr/colorOnSurface</item>
+        <item name="colorPrimary">@color/cobalt_primary</item>
+        <item name="colorOnPrimary">#191239</item>
+        <item name="colorPrimaryContainer">#292050</item>
+        <item name="colorOnPrimaryContainer">#E8DEFF</item>
+        <item name="colorSecondary">@color/cobalt_secondary</item>
+        <item name="colorOnSecondary">#0D2341</item>
+        <item name="colorSecondaryContainer">#172A47</item>
+        <item name="colorOnSecondaryContainer">#D6E7FF</item>
+        <item name="colorTertiary">@color/cobalt_secondary</item>
+        <item name="colorOnTertiary">#0D2341</item>
+        <item name="colorTertiaryContainer">#172A47</item>
+        <item name="colorOnTertiaryContainer">#D6E7FF</item>
         <item name="colorSurface">#000000</item>
         <item name="colorSurfaceContainerHigh">#000000</item>
         <item name="colorSurfaceContainer">#000000</item>
@@ -30,12 +30,15 @@
     </style>
     <style name="ThemeOverlay.PhosClick.Dialog" parent="ThemeOverlay.Material3.MaterialAlertDialog">
         <item name="shapeAppearanceOverlay">@style/ShapeAppearanceOverlay.PhosClick.Dialog</item>
-        <item name="colorPrimary">?attr/colorOnSurface</item>
-        <item name="colorSecondary">?attr/colorOnSurfaceVariant</item>
+        <item name="colorPrimary">@color/cobalt_primary</item>
+        <item name="colorSecondary">@color/cobalt_secondary</item>
     </style>
     <style name="ShapeAppearanceOverlay.PhosClick.Dialog" parent="">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">28dp</item>
     </style>
+    <color name="cobalt_primary">#BAA8FF</color>
+    <color name="cobalt_secondary">#8AB8FF</color>
+    <color name="camera_warning">#FFADAA</color>
     <color name="launcher_background">#101214</color>
 </resources>

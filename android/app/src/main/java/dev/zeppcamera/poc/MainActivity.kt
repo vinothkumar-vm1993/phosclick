@@ -85,8 +85,8 @@ class MainActivity:AppCompatActivity() {
         val lit=if(mode=="Photo")flash!="OFF" else torch
         flashButton.setImageResource(if(mode=="Photo"&&flash=="AUTO")R.drawable.ic_action_flash_auto else if(lit)R.drawable.ic_action_flash else R.drawable.ic_action_flash_off)
         flashButton.contentDescription=if(mode=="Photo")"Flash $flash" else "Torch ${if(torch)"ON" else "OFF"}";flashButton.tooltipText=flashButton.contentDescription
-        flashButton.imageTintList=android.content.res.ColorStateList.valueOf(if(lit)0xffffd65a.toInt() else Color.WHITE)
-        modeButtons.forEach{(value,button)->button.setTextColor(if(value==mode)0xffffd65a.toInt() else 0xffa1a9b4.toInt())}
+        flashButton.imageTintList=android.content.res.ColorStateList.valueOf(if(lit)getColor(R.color.cobalt_secondary) else Color.WHITE)
+        modeButtons.forEach{(value,button)->button.setTextColor(if(value==mode)getColor(R.color.cobalt_primary) else 0xffa1a9b4.toInt())}
         updateResourceWarning()
     }
     private fun updateZoomUI(){
@@ -109,7 +109,7 @@ class MainActivity:AppCompatActivity() {
             else->"Waiting for watch"
         }
         if(relayStatus.text.toString()!=text)relayStatus.text=text
-        if(resourceLabel!=warning){relayStatus.setTextColor(if(warning.isNotEmpty())0xffffcf69.toInt()else 0xffa1a9b4.toInt());relayStatus.setCompoundDrawablesRelativeWithIntrinsicBounds(if(warning.isNotEmpty())R.drawable.ic_action_warning else 0,0,0,0);relayStatus.compoundDrawablePadding=dp(6);resourceLabel=warning}
+        if(resourceLabel!=warning){relayStatus.setTextColor(if(warning.isNotEmpty())getColor(R.color.camera_warning)else 0xffa1a9b4.toInt());relayStatus.setCompoundDrawablesRelativeWithIntrinsicBounds(if(warning.isNotEmpty())R.drawable.ic_action_warning else 0,0,0,0);relayStatus.compoundDrawablePadding=dp(6);resourceLabel=warning}
     }
     private fun focusAt(x:Float,y:Float){
         val controller=session?:return
@@ -281,7 +281,7 @@ class MainActivity:AppCompatActivity() {
         mode=state.optString("mode","Photo");quality=state.optString("quality","HD");fps=state.optInt("fps",30);timer=state.optInt("timer");aspect=state.optString("aspect","4:3");photoSize=state.optString("photoSize","Auto");flash=state.optString("flash","OFF");torch=state.optBoolean("torch")
         configuring=state.optBoolean("busy");saving=false;finalizing=false
         if(paired&&!connectionHapticPlayed&&session?.claimConnectionHaptic()==true){connectionHapticPlayed=true;remoteButton.performHapticFeedback(HapticFeedbackConstants.CLOCK_TICK)}
-        val live=state.optBoolean("connectionLive");if(lastConnectionTint!=live){lastConnectionTint=live;remoteButton.imageTintList=android.content.res.ColorStateList.valueOf(if(live)Color.WHITE else 0xffa1a9b4.toInt())}
+        val live=state.optBoolean("connectionLive");if(lastConnectionTint!=live){lastConnectionTint=live;remoteButton.imageTintList=android.content.res.ColorStateList.valueOf(if(live)getColor(R.color.cobalt_secondary) else 0xffa1a9b4.toInt())}
         show(message)
         if(state.has("sessionActive")&&!state.optBoolean("sessionActive"))handler.post{releaseSessionUI()}
     }

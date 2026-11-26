@@ -1,6 +1,6 @@
 # PhosClick privacy statement
 
-Updated: 23 November 2026. Applies to Android 0.9.7 and watch 0.6.22.
+Updated: 23 November 2026. Applies to Android 0.9.8 and watch 0.6.22.
 
 PhosClick controls the camera on your Android phone from a supported Zepp OS watch. The app does not require a PhosClick account and contains no advertising or analytics service.
 

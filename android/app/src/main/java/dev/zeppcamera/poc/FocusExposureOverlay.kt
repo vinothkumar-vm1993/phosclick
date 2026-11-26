@@ -9,6 +9,7 @@ import kotlin.math.roundToInt
 
 /** Contextual focus ring and sun handle, never a permanent camera control. */
 class FocusExposureOverlay(context:Context):View(context){
+ private val focusAccent=context.getColor(R.color.cobalt_secondary)
  private val paint=Paint(Paint.ANTI_ALIAS_FLAG);private val handler=Handler(Looper.getMainLooper())
  private var cx=0f;private var cy=0f;private var barX=0f;private var trackTop=0f
  private var minimum=0;private var maximum=0;private var index=0;private var step=0f
@@ -28,10 +29,10 @@ class FocusExposureOverlay(context:Context):View(context){
  fun updateExposure(current:Int){if(!dragging){val value=current.coerceIn(minimum,maximum);if(value!=index){index=value;describe();invalidate()}}}
  fun hideNow(){handler.removeCallbacks(hide);animate().cancel();dragging=false;visibility=GONE}
  private fun describe(){contentDescription=if(maximum>minimum)"Focus and exposure, %+.1f EV. Swipe sun handle up or down to adjust brightness".format(index*step)else if(focused==true)"Metering set"else "Focus point"}
- override fun onDraw(canvas:Canvas){super.onDraw(canvas);paint.style=Paint.Style.STROKE;paint.strokeWidth=dp(1.5f);paint.color=if(focused==true)0xffffd65a.toInt()else Color.WHITE;paint.setShadowLayer(dp(2f),0f,0f,Color.BLACK)
+ override fun onDraw(canvas:Canvas){super.onDraw(canvas);paint.style=Paint.Style.STROKE;paint.strokeWidth=dp(1.5f);paint.color=if (focused == true) focusAccent else Color.WHITE;paint.setShadowLayer(dp(2f),0f,0f,Color.BLACK)
   val r=dp(23f);canvas.drawRoundRect(cx-r,cy-r,cx+r,cy+r,dp(4f),dp(4f),paint)
   if(maximum>minimum){val bottom=trackTop+dp(120f);paint.strokeWidth=dp(1f);paint.color=0xaaffffff.toInt();canvas.drawLine(barX,trackTop,barX,bottom,paint)
-   val y=bottom-(index-minimum).toFloat()/(maximum-minimum)*dp(120f);paint.color=0xffffd65a.toInt();paint.style=Paint.Style.FILL;canvas.drawCircle(barX,y,dp(8f),paint);paint.style=Paint.Style.STROKE
+   val y=bottom-(index-minimum).toFloat()/(maximum-minimum)*dp(120f);paint.color=focusAccent;paint.style=Paint.Style.FILL;canvas.drawCircle(barX,y,dp(8f),paint);paint.style=Paint.Style.STROKE
    for(i in 0..7){val angle=Math.PI*i/4;canvas.drawLine(barX+kotlin.math.cos(angle).toFloat()*dp(11f),y+kotlin.math.sin(angle).toFloat()*dp(11f),barX+kotlin.math.cos(angle).toFloat()*dp(15f),y+kotlin.math.sin(angle).toFloat()*dp(15f),paint)}
    val zero=bottom-(0-minimum).toFloat()/(maximum-minimum)*dp(120f);canvas.drawLine(barX-dp(4f),zero,barX+dp(4f),zero,paint)
   };paint.clearShadowLayer()

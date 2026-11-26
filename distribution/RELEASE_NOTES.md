@@ -1,3 +1,9 @@
+## PhosClick 0.9.8
+
+The Android camera UI uses blue and violet accents drawn from the Cobalt Violet icon. Camera and Settings surfaces remain AMOLED black. Active flash, focus and exposure, zoom controls, selected modes and settings use the updated colors.
+
+Install **PhosClick-0.9.8.apk** on Android 12 or later. The matching watch build is 0.6.22.
+
 ## PhosClick 0.9.7
 
 Install the signed **PhosClick-0.9.7.apk** on Android 12 or later. This release updates the Android launcher to the Cobalt Violet camera icon. The watch app 0.6.22 and its Zepp Store listing use the same artwork. Zepp Store availability depends on review.
