@@ -21,7 +21,7 @@ Page(BasePage({
  },
  text(x,y,w,h,size,text,color=0xffffff){const a=ui.createWidget(ui.widget.TEXT,{x,y,w,h,text:String(text??'—'),text_size:size,color,text_style:ui.text_style.WRAP,align_h:ui.align.CENTER_H});this.widgets.push(a);return a},
  button(x,y,w,h,label,action,color=0x22272e){const a=ui.createWidget(ui.widget.BUTTON,{x,y,w,h,text:String(label??'—'),text_size:24,color:0xffffff,normal_color:color,press_color:0x505760,radius:Math.min(20,h/2),click_func:action});this.widgets.push(a);return a},
- icon(x,y,name,action,size=72){const file=name+(size===96?'96':'');const a=ui.createWidget(ui.widget.BUTTON,{x,y,w:size,h:size,text:'',normal_src:file+'.png',press_src:file+'-pressed.png',click_func:action,longpress_func:()=>{this.hintReturn=this.panel;this.hintText={'flash-off':'Photo flash Off / Auto / On, or video torch', 'flash-auto':'Photo flash is automatic', 'flash-on':'Photo flash is on', 'torch-on':'Video torch is on; tap to turn off',gallery:'Left: older capture\nRight: newer capture',snapshot:'Request a still camera frame',switch:'Switch front or rear camera',connect:'Watch 0.6.20 · Zepp '+(this.bridgeVersion||'?')+' · phone '+(this.phoneVersion||'?'),settings:'Capture settings',shutter:'Take a photo',record:'Start recording',stop:'Stop and save recording',back:'Back',next:'Next page'}[name]||'Tap to select';this.navigate('hint')}});this.widgets.push(a);return a},
+ icon(x,y,name,action,size=72){const file=name+(size===96?'96':'');const a=ui.createWidget(ui.widget.BUTTON,{x,y,w:size,h:size,text:'',normal_src:file+'.png',press_src:file+'-pressed.png',click_func:action,longpress_func:()=>{this.hintReturn=this.panel;this.hintText={'flash-off':'Photo flash Off / Auto / On, or video torch', 'flash-auto':'Photo flash is automatic', 'flash-on':'Photo flash is on', 'torch-on':'Video torch is on; tap to turn off',gallery:'Left: older capture\nRight: newer capture',snapshot:'Request a still camera frame',switch:'Switch front or rear camera',connect:'Watch 0.6.22 · Zepp '+(this.bridgeVersion||'?')+' · phone '+(this.phoneVersion||'?'),settings:'Capture settings',shutter:'Take a photo',record:'Start recording',stop:'Stop and save recording',back:'Back',next:'Next page'}[name]||'Tap to select';this.navigate('hint')}});this.widgets.push(a);return a},
  connectionHaptic(){
   if(this.connectionHapticPlayed)return
   this.connectionHapticPlayed=true
@@ -54,7 +54,7 @@ Page(BasePage({
  },
  diagnose(event){
   if(!this.alive||!this.paired)return
-  const info={event,watchVersion:'0.6.20',captureWidget:'IMG',hapticStarts:this.hapticStarts,touchUps:this.touchUps,vibrationScene:this.lastHapticType}
+  const info={event,watchVersion:'0.6.22',captureWidget:'IMG',hapticStarts:this.hapticStarts,touchUps:this.touchUps,vibrationScene:this.lastHapticType}
   try{info.vibrationTypes=JSON.stringify({gentle:this.vibrator?.getType?.().GENTLE_SHORT,durationMs:12,stopMs:18,issue:this.hapticIssue||''})}catch(e){}
   try{this.call({diagnostics:info}).catch(()=>{})}catch(e){}
  },

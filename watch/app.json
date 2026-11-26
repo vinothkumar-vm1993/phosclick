@@ -5,8 +5,8 @@
     "appName": "PhosClick",
     "appType": "app",
     "version": {
-      "code": 36,
-      "name": "0.6.20"
+      "code": 38,
+      "name": "0.6.22"
     },
     "icon": "icon.png",
     "vender": "PhosClick",

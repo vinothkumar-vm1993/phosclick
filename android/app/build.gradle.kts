@@ -2,7 +2,7 @@ plugins { id("com.android.application"); id("org.jetbrains.kotlin.android") }
 android {
     namespace = "dev.zeppcamera.poc"
     compileSdk = 36
-    defaultConfig { applicationId = "dev.zeppcamera.poc"; minSdk = 31; targetSdk = 36; versionCode = 41; versionName = "0.9.6"; testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner" }
+    defaultConfig { applicationId = "dev.zeppcamera.poc"; minSdk = 31; targetSdk = 36; versionCode = 42; versionName = "0.9.7"; testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner" }
     signingConfigs {
         create("publicRelease") {
             val keystorePath = System.getenv("WRISTSNAP_KEYSTORE")

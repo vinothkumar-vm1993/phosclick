@@ -1,3 +1,9 @@
+## PhosClick 0.9.7
+
+Install the signed **PhosClick-0.9.7.apk** on Android 12 or later. This release updates the Android launcher to the Cobalt Violet camera icon. The watch app 0.6.22 and its Zepp Store listing use the same artwork. Zepp Store availability depends on review.
+
+Android application ID and signing certificate are retained for in-place upgrades. The watch Store App ID remains 1136713.
+
 ## PhosClick 0.9.6
 
 WristSnap is now PhosClick. Android’s application ID and signing certificate are retained for in-place updates. The existing watch store App ID is retained. Earlier captures remain visible in the gallery.

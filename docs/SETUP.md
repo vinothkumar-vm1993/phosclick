@@ -2,7 +2,7 @@
 
 ## Android installation
 
-Download `PhosClick-0.9.6.apk` from [the official repository release](https://github.com/vinothkumar-vm1993/phosclick/releases/latest). Verify the SHA-256 digest in the release notes when possible. Android may ask you to allow installation from the browser or file manager used for this download; grant that only for the source you chose. Launch PhosClick and grant Camera permission. Microphone is optional, required only for normal-video sound. Allow notifications for the ongoing session control.
+Download `PhosClick-0.9.7.apk` from [the official repository release](https://github.com/vinothkumar-vm1993/phosclick/releases/latest). Verify the SHA-256 digest in the release notes when possible. Android may ask you to allow installation from the browser or file manager used for this download; grant that only for the source you chose. Launch PhosClick and grant Camera permission. Microphone is optional, required only for normal-video sound. Allow notifications for the ongoing session control.
 
 The public APK is release-signed. Earlier developer/debug installations use a different signing certificate, so Android may reject an in-place update. Export anything needed and remove the old developer app before installing the public release; app-local settings/access approval reset. Shared Pictures/Movies media are separate from app settings. Do not remove an existing installation without understanding this migration.
 
@@ -35,7 +35,7 @@ Swipe modes or tap their names. Pinch/slider changes camera zoom; tap preview to
 
 ## Lock, exit and reconnect
 
-An already active camera session can continue while the phone is locked or Home is pressed. The ongoing notification indicates the session. Use Disconnect when finished. Root Back, Recents removal or service stop releases camera and microphone; closing only the watch UI does not stop the phone session. Android may stop a service under system/OEM restrictions, so reopen PhosClick visibly if needed. PhosClick requests a 60-second watch page timeout. On watch 0.6.20 with Android 0.9.6, use × then Close to clear the phone's watch connection status. The phone session stays available and any active recording continues. Watch wake/reopen reconnects through Zepp when available. No claim is made that an absent radio signal can be preserved.
+An already active camera session can continue while the phone is locked or Home is pressed. The ongoing notification indicates the session. Use Disconnect when finished. Root Back, Recents removal or service stop releases camera and microphone; closing only the watch UI does not stop the phone session. Android may stop a service under system/OEM restrictions, so reopen PhosClick visibly if needed. PhosClick requests a 60-second watch page timeout. On watch 0.6.22 with Android 0.9.7, use × then Close to clear the phone's watch connection status. The phone session stays available and any active recording continues. Watch wake/reopen reconnects through Zepp when available. No claim is made that an absent radio signal can be preserved.
 
 ## Troubleshooting
 

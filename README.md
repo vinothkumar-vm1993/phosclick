@@ -1,5 +1,7 @@
 # PhosClick
 
+<img src="distribution/store-previews/icon-240.png" width="88" height="88" alt="PhosClick Cobalt Violet camera icon">
+
 **Android camera remote for Amazfit Active 2 Square.**
 
 PhosClick lets you control your Android phone camera from an Amazfit Active 2 Square through its existing connection to the Zepp Android app.
@@ -8,7 +10,7 @@ PhosClick lets you control your Android phone camera from an Amazfit Active 2 Sq
 
 Existing installs signed with the release certificate can update in place. Earlier captures remain available in PhosClick’s gallery.
 
-The source versions are **Android 0.9.6** and **watch 0.6.20**. Check the version shown on the GitHub Releases page before downloading. Watch installation through Zepp Store depends on review and availability. Developers can build the watch package from source for Zepp Developer Mode preview.
+The source versions are **Android 0.9.7** and **watch 0.6.22**. Check the version shown on the GitHub Releases page before downloading. Watch installation through Zepp Store depends on review and availability. Developers can build the watch package from source for Zepp Developer Mode preview.
 
 ## Supported devices
 
@@ -49,7 +51,7 @@ The app displays low phone battery and storage warnings. Camera zoom is availabl
 
 PhosClick uses the watch's existing Zepp connection and an authenticated loopback service on the same phone. Setup requires one phone-side approval. The app has no extra Bluetooth pairing, account, typed pairing key or cloud relay. Commands and requested thumbnails are exchanged locally. PhosClick does not send analytics or upload captures.
 
-Start the phone session with PhosClick visible. An active session can continue with the phone locked or after pressing Home, subject to Android and device restrictions. With Android **0.9.6** and watch **0.6.20**, closing the watch controls updates the phone connection status while keeping the phone session and any recording active. If the close signal cannot reach the phone, the connection indicator clears after its timeout. Use **Disconnect** on the phone, root Back or remove the app from Recents to stop the Android camera session.
+Start the phone session with PhosClick visible. An active session can continue with the phone locked or after pressing Home, subject to Android and device restrictions. With Android **0.9.7** and watch **0.6.22**, closing the watch controls updates the phone connection status while keeping the phone session and any recording active. If the close signal cannot reach the phone, the connection indicator clears after its timeout. Use **Disconnect** on the phone, root Back or remove the app from Recents to stop the Android camera session.
 
 ## Support and contact
 
